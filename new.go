@@ -15,16 +15,17 @@ var (
 )
 
 type JsonResponse struct {
-	Headlines []headlines.Response `json:"headlines"`
+	Headlines []headlines.Response `json:"News"`
 }
 
 func main() {
-	ticker := time.NewTicker(30 * time.Second)
+	ticker := time.NewTicker(30 * time.Minute)
 	defer ticker.Stop()
-	responses = headlines.ImportHeadlines()
+	responses = append(responses, headlines.ImportHeadlines("div.container__field-links.container_lead-package__field-links div.card")...)
 	go func() {
 		for range ticker.C {
-			newResponses := headlines.ImportHeadlines()
+			var newResponses []headlines.Response
+			newResponses = append(newResponses, headlines.ImportHeadlines("div.container__field-links.container_lead-package__field-links div.card")...)
 			mu.Lock()
 			responses = newResponses
 			mu.Unlock()
@@ -32,10 +33,12 @@ func main() {
 	}()
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")              // Set the content type to application/json
-		jsonResponse := JsonResponse{Headlines: responses}              // Create a JsonResponse with the scraped data
-		if err := json.NewEncoder(w).Encode(jsonResponse); err != nil { // Encode the response as JSON
-			http.Error(w, err.Error(), http.StatusInternalServerError) // Handle any encoding errors
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		jsonResponse := JsonResponse{Headlines: responses}
+		if err := json.NewEncoder(w).Encode(jsonResponse); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 	})

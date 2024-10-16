@@ -3,7 +3,6 @@ package headlines
 import (
 	"fmt"
 
-	"github.com/PuerkitoBio/goquery"
 	"github.com/gocolly/colly"
 )
 
@@ -17,44 +16,36 @@ type Response struct {
 	Description string
 }
 
-func ImportHeadlines() []Response {
+func ImportHeadlines(element string) []Response {
 	var images []Image
 	var urls []string
 	var descriptions []string
 	var uniqueUrls = make(map[string]bool)
 	collector := colly.NewCollector()
-	collector.OnHTML("div.stack_condensed__inner div.container__field-links.container_grid-3__field-links", func(e *colly.HTMLElement) {
-		e.DOM.Find("a").Each(func(_ int, el *goquery.Selection) {
-			url, exists := el.Attr("href")
-			if exists && len(url) > 0 {
-				if len(urls) == 0 || urls[len(urls)-1] != url {
-					uniqueUrls["https://edition.cnn.com"+url] = true
-				}
-			}
-			el.Find("div.image img").Each(func(_ int, img *goquery.Selection) {
-				src, exists := img.Attr("src")
-				if exists {
-					images = append(images, Image{Src: src, IsVideo: false})
-				}
-			})
-			el.Find("video source").Each(func(_ int, video *goquery.Selection) {
-				src, exists := video.Attr("src")
-				if exists {
-					images = append(images, Image{Src: src, IsVideo: true})
-				}
+	collector.OnHTML(element, func(e *colly.HTMLElement) {
+		isFound := false
+		url, exists := e.DOM.Find("a").Attr("href")
+		if exists {
+			urls = append(urls, "https://edition.cnn.com"+url)
+		}
+		src, exists := e.DOM.Find("img").Attr("src")
+		if exists {
+			images = append(images, Image{Src: src, IsVideo: false})
+			isFound = true
+		}
+		src, exists = e.DOM.Find("video source").Attr("src")
+		if exists {
+			images = append(images, Image{Src: src, IsVideo: true})
+			isFound = true
 
-			})
-			el.Find("span.container__headline-text").Each(func(_ int, description *goquery.Selection) {
-				desc := description.Text()
-				descriptions = append(descriptions, desc)
-			})
-		})
-		collector.OnHTMLDetach("div.container__field-links.container_grid-3__field-links")
-	})
-	collector.OnRequest(func(r *colly.Request) {
-		r.Headers.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36")
-	})
+		}
+		desc := e.DOM.Find("span.container__headline-text").Text()
 
+		descriptions = append(descriptions, desc)
+		if !isFound {
+			images = append(images, Image{Src: "", IsVideo: false})
+		}
+	})
 	e := collector.Visit("https://edition.cnn.com/")
 	if e != nil {
 		fmt.Println(e)
