@@ -24,7 +24,6 @@ func ImportHeadlines() []Response {
 	var uniqueUrls = make(map[string]bool)
 	collector := colly.NewCollector()
 	collector.OnHTML("div.stack_condensed__inner div.container__field-links.container_grid-3__field-links", func(e *colly.HTMLElement) {
-
 		e.DOM.Find("a").Each(func(_ int, el *goquery.Selection) {
 			url, exists := el.Attr("href")
 			if exists && len(url) > 0 {
@@ -52,6 +51,10 @@ func ImportHeadlines() []Response {
 		})
 		collector.OnHTMLDetach("div.container__field-links.container_grid-3__field-links")
 	})
+	collector.OnRequest(func(r *colly.Request) {
+		r.Headers.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36")
+	})
+
 	e := collector.Visit("https://edition.cnn.com/")
 	if e != nil {
 		fmt.Println(e)
