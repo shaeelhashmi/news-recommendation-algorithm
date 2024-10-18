@@ -22,6 +22,7 @@ func main() {
 	ticker := time.NewTicker(30 * time.Minute)
 	defer ticker.Stop()
 	responses = append(responses, headlines.ImportHeadlines("div.container__field-links.container_lead-package__field-links div.card")...)
+	responses = append(responses, headlines.ImportHeadlines("div.zone__items.layout--wide-left-balanced-2 div.stack div.card")...)
 	go func() {
 		for range ticker.C {
 			var newResponses []headlines.Response

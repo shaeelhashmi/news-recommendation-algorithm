@@ -2,6 +2,7 @@ package headlines
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/gocolly/colly"
 )
@@ -24,27 +25,32 @@ func ImportHeadlines(element string) []Response {
 	collector := colly.NewCollector()
 	collector.OnHTML(element, func(e *colly.HTMLElement) {
 		isFound := false
-		url, exists := e.DOM.Find("a").Attr("href")
-		if exists {
-			urls = append(urls, "https://edition.cnn.com"+url)
-		}
-		src, exists := e.DOM.Find("img").Attr("src")
-		if exists {
-			images = append(images, Image{Src: src, IsVideo: false})
-			isFound = true
-		}
-		src, exists = e.DOM.Find("video source").Attr("src")
-		if exists {
-			images = append(images, Image{Src: src, IsVideo: true})
-			isFound = true
-
-		}
 		desc := e.DOM.Find("span.container__headline-text").Text()
+		desc = strings.TrimSpace(desc)
+		if desc != "Catch up on today’s global news" {
 
-		descriptions = append(descriptions, desc)
-		if !isFound {
-			images = append(images, Image{Src: "", IsVideo: false})
+			url, exists := e.DOM.Find("a").Attr("href")
+			if exists {
+				urls = append(urls, "https://edition.cnn.com"+url)
+			}
+			src, exists := e.DOM.Find("img").Attr("src")
+			if exists {
+				images = append(images, Image{Src: src, IsVideo: false})
+				isFound = true
+			}
+			src, exists = e.DOM.Find("video source").Attr("src")
+			if exists {
+				images = append(images, Image{Src: src, IsVideo: true})
+				isFound = true
+
+			}
+
+			descriptions = append(descriptions, desc)
+			if !isFound {
+				images = append(images, Image{Src: "", IsVideo: false})
+			}
 		}
+
 	})
 	e := collector.Visit("https://edition.cnn.com/")
 	if e != nil {
