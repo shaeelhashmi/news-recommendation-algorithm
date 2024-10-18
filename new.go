@@ -22,11 +22,11 @@ type JsonResponse struct {
 func main() {
 	ticker := time.NewTicker(30 * time.Minute)
 	defer ticker.Stop()
-	responses = headlines.ImportHeadlines("div.container__field-links.container_lead-package__field-links div.card")
+	DataStructures.AppendList(responses, headlines.ImportHeadlines("div.zone__items.layout--wide-left-balanced-2 div.stack_condensed__inner div.container.container_lead-package.lazy div.container__field-links.container_lead-package__field-links div.card"))
 	DataStructures.AppendList(responses, headlines.ImportHeadlines("div.zone__items.layout--wide-left-balanced-2 div.stack div.card"))
 	go func() {
 		for range ticker.C {
-			newResponses := headlines.ImportHeadlines("div.container__field-links.container_lead-package__field-links div.card")
+			newResponses := headlines.ImportHeadlines("div.zone__items.layout--wide-left-balanced-2 div.stack_condensed__inner div.container.container_lead-package.lazy div.container__field-links.container_lead-package__field-links div.card")
 			DataStructures.AppendList(newResponses, headlines.ImportHeadlines("div.zone__items.layout--wide-left-balanced-2 div.stack div.card"))
 			mu.Lock()
 			responses = newResponses
@@ -39,9 +39,8 @@ func main() {
 		w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 		data := DataStructures.GetResponse(responses)
-
 		mu.Lock()
-		defer mu.Unlock() // Ensure the mutex is unlocked after encoding
+		defer mu.Unlock()
 		jsonResponse := JsonResponse{Headlines: data}
 		if err := json.NewEncoder(w).Encode(jsonResponse); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)

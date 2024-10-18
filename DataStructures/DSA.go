@@ -71,10 +71,15 @@ func Remove(list *LinkedList, idx int) {
 	}
 }
 func AppendList(list *LinkedList, value *LinkedList) {
-	temp2 := value.Head
-	for temp2 != nil {
-		Append(list, temp2.Value)
-		temp2 = temp2.Next
+	if list.Head == nil {
+		list = value
+		return
+	} else {
+		temp2 := value.Head
+		for temp2 != nil {
+			Append(list, temp2.Value)
+			temp2 = temp2.Next
+		}
 	}
 }
 func GetResponse(list *LinkedList) []Response {
