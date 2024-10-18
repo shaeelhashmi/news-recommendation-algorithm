@@ -1,4 +1,4 @@
-package headlines
+package Scraper
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 	"github.com/gocolly/colly"
 )
 
-func ImportHeadlines(element string) *DataStructures.LinkedList {
+func ImportHeadlines(element string, address string) *DataStructures.LinkedList {
 	var images []DataStructures.Image
 	var urls []string
 	var descriptions []string
@@ -43,7 +43,7 @@ func ImportHeadlines(element string) *DataStructures.LinkedList {
 		}
 
 	})
-	e := collector.Visit("https://edition.cnn.com/")
+	e := collector.Visit(address)
 	if e != nil {
 		fmt.Println(e)
 	}

@@ -74,6 +74,8 @@ func AppendList(list *LinkedList, value *LinkedList) {
 	if list.Head == nil {
 		list = value
 		return
+	} else if value.Head == nil {
+		return
 	} else {
 		temp2 := value.Head
 		for temp2 != nil {
