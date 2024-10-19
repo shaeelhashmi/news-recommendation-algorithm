@@ -10,33 +10,34 @@ import (
 	"time"
 )
 
-var (
-	mu sync.Mutex
-)
+var cache = &sync.Map{}
 
 type JsonResponse struct {
 	Headlines []DataStructures.Response `json:"News"`
 }
 
 func main() {
-	ticker := time.NewTicker(30 * time.Minute)
-	defer ticker.Stop()
-	NewsHeadlines := headlines.ImportHeadlines()
-	go func() {
-		for range ticker.C {
-			NewsHeadlines = headlines.ImportHeadlines()
-			mu.Lock()
-		}
-	}()
-
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/news/", func(w http.ResponseWriter, r *http.Request) {
+		q := r.URL.Query().Get("q")
 		w.Header().Set("Content-Type", "application/json")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-		mu.Lock()
-		defer mu.Unlock()
-		jsonResponse := JsonResponse{Headlines: NewsHeadlines}
-		if err := json.NewEncoder(w).Encode(jsonResponse); err != nil {
+		w.Header().Set("Cache-Control", "public, max-age=1800")
+		if data, ok := cache.Load(q); ok {
+			json.NewEncoder(w).Encode(data)
+			return
+
+		}
+		news := headlines.ImportHeadlines(q)
+		cache.Store(q, news)
+		go func() {
+			<-time.After(30 * time.Minute)
+			cache.Delete("politics")
+		}()
+		jsonResponse := JsonResponse{Headlines: news}
+
+		err := json.NewEncoder(w).Encode(jsonResponse)
+		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
