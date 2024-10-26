@@ -1,14 +1,13 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-export default function News() {
+
+export default function Headlines() {
   const [posts, setPosts] = useState<any[]>([]);
-  const { topic, subtopic } = useParams();
 
   useEffect(() => {
-    axios.get(`http://localhost:8080/news/?topic=${topic}&?subtopic=${subtopic}`)
+    axios.get('http://localhost:8080/news/?topic=entertainment&subtopic=movies')
       .then(response => {
-        setPosts(response.data);
+        setPosts(Array.isArray(response.data) ? response.data : []);
       })
       .catch(error => {
         console.error('Error fetching news:', error);
@@ -21,8 +20,8 @@ export default function News() {
 
   return (
     <ul>
-      {posts.map((post,index) => (
-        <li key={index}>{post.Description}</li>
+      {posts.map(post => (
+        <li key={post.id}>{post.Description}</li>
       ))}
     </ul>
   );

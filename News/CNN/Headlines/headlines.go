@@ -15,8 +15,3 @@ func ImportHeadlines(a string) []DataStructures.Response {
 	responses := Scraper.ImportHeadlines("div.card", query)
 	return DataStructures.GetResponse(responses)
 }
-
-// func ImportPoliticalNews() []DataStructures.Response {
-// 	responses := Scraper.ImportHeadlines(" div.card", "https://edition.cnn.com/politics")
-// 	return DataStructures.GetResponse(responses)
-// }

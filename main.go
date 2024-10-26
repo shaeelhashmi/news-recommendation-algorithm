@@ -49,7 +49,7 @@ func main() {
 		cache.Store(endUrl, news)
 		go func() {
 			<-time.After(30 * time.Minute)
-			cache.Delete("politics")
+			cache.Delete(endUrl)
 		}()
 		jsonResponse := JsonResponse{Headlines: news}
 
