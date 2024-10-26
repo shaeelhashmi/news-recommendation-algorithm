@@ -5,9 +5,9 @@ export default function Headlines() {
   const [posts, setPosts] = useState<any[]>([]);
 
   useEffect(() => {
-    axios.get('http://localhost:8080/news/?topic=entertainment&subtopic=movies')
+    axios.get('http://localhost:8080/news/')
       .then(response => {
-        setPosts(Array.isArray(response.data) ? response.data : []);
+        setPosts(response.data.News);
       })
       .catch(error => {
         console.error('Error fetching news:', error);
@@ -20,8 +20,8 @@ export default function Headlines() {
 
   return (
     <ul>
-      {posts.map(post => (
-        <li key={post.id}>{post.Description}</li>
+      {posts.map((post,index) => (
+        <li key={index}>{post.Description}</li>
       ))}
     </ul>
   );

@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"scraper/DataStructures"
@@ -24,6 +25,7 @@ func main() {
 	http.HandleFunc("/news/", func(w http.ResponseWriter, r *http.Request) {
 		q := r.URL.Query().Get("topic")
 		q2 := r.URL.Query().Get("subtopic")
+		fmt.Print(q, q2)
 		var endUrl string
 		if q2 != "" {
 			endUrl = q + "/" + q2
