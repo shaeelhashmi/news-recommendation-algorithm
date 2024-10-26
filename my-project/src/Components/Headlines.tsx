@@ -14,10 +14,6 @@ export default function Headlines() {
       });
   }, []);
 
-  useEffect(() => {
-    console.log(posts);
-  }, [posts]);
-
   return (
     <ul>
       {posts.map((post,index) => (
