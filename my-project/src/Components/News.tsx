@@ -6,13 +6,12 @@ export default function News() {
   const { topic, subtopic } = useParams();
 
   useEffect(() => {
-    axios.get(`http://localhost:8080/news/?topic=${topic}&?subtopic=${subtopic}`)
-      .then(response => {
-        setPosts(response.data);
-      })
-      .catch(error => {
-        console.error('Error fetching news:', error);
-      });
+    const fetchData = async () => {
+      const result= await   axios.get(`http://localhost:8080/news/?topic=${topic}&?subtopic=${subtopic}`);
+      setPosts(result.data.News);
+    };
+   fetchData();
+      
   }, []);
 
   useEffect(() => {

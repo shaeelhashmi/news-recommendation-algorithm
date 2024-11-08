@@ -5,13 +5,11 @@ export default function Headlines() {
   const [posts, setPosts] = useState<any[]>([]);
 
   useEffect(() => {
-    axios.get('http://localhost:8080/news/')
-      .then(response => {
-        setPosts(response.data.News);
-      })
-      .catch(error => {
-        console.error('Error fetching news:', error);
-      });
+    const fetchData = async () =>{
+      const result = await axios.get('http://localhost:8080/news/');
+      setPosts(result.data.News);
+    };
+    fetchData();
   }, []);
 
   return (
