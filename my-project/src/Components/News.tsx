@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import NewsCard from './Card/NewsCard'
 export default function News() {
   const [posts, setPosts] = useState<any[]>([]);
   const { topic, subtopic } = useParams();
@@ -19,10 +20,12 @@ export default function News() {
   }, [posts]);
 
   return (
-    <ul>
-      {posts.map((post,index) => (
-        <li key={index}>{post.Description}</li>
-      ))}
-    </ul>
+    <div className="grid grid-cols-3">
+    {posts.map((post,index) => (
+     <div key={index}>
+     <NewsCard image={post.Img.Src} link={post.Links	} description={post.Description	}/>
+     </div>
+    ))}
+  </div>
   );
 }

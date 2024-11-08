@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-
+import NewsCard from './Card/NewsCard'
 export default function Headlines() {
   const [posts, setPosts] = useState<any[]>([]);
 
@@ -13,10 +13,12 @@ export default function Headlines() {
   }, []);
 
   return (
-    <ul>
+  <div className="grid grid-cols-3">
       {posts.map((post,index) => (
-        <li key={index}>{post.Description}</li>
+       <div key={index}>
+       <NewsCard image={post.Img.Src} link={post.Links	} description={post.Description	}/>
+       </div>
       ))}
-    </ul>
+    </div>
   );
 }
