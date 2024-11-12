@@ -2,7 +2,9 @@ import { useState,useEffect } from "react"
 import { useParams } from "react-router-dom"
 import axios from 'axios';
 import NewsCard from './Card/NewsCard'
+import Loader from './Loader/Loader';
 export default function TopicNews() {
+   const [loader, setLoader] = useState<boolean>(true);
     const  {topic}=useParams()
     const [posts, setPosts] = useState<any[]>([]);
 
@@ -11,6 +13,7 @@ export default function TopicNews() {
     const fetchData = async () => {
       const result= await   axios.get(`http://localhost:8080/news/?topic=${topic}`);
       setPosts(result.data.News);
+      setLoader(false);
     };
    fetchData();
   }catch(e){
@@ -19,6 +22,7 @@ export default function TopicNews() {
   }, []);
 
   return (
+    loader?<Loader></Loader>:
     <div className="grid grid-cols-3">
       {posts.map((post,index) => (
         <div key={index}>

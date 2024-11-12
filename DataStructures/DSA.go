@@ -26,11 +26,12 @@ func NewLinkedList() *LinkedList {
 	}
 }
 func Append(list *LinkedList, value Response) {
+	node := &Node{Value: value, Next: nil}
 	if list.Head == nil {
-		list.Head = &Node{Value: value, Next: nil}
+		list.Head = node
 		list.Tail = list.Head
 	} else {
-		list.Tail.Next = &Node{Value: value, Next: nil}
+		list.Tail.Next = node
 		list.Tail = list.Tail.Next
 	}
 }

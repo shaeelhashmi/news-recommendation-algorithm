@@ -51,8 +51,23 @@ func ImportHeadlines(element string, address string) *DataStructures.LinkedList 
 		urls = append(urls, url)
 	}
 	response := DataStructures.NewLinkedList()
+	uniqueItems := make(map[string]*DataStructures.Node)
 	for i := 0; i < len(images); i++ {
-		DataStructures.Append(response, DataStructures.Response{Img: images[i], Links: urls[i], Description: descriptions[i]})
+		newItem := DataStructures.Response{Img: images[i], Links: urls[i], Description: descriptions[i]}
+
+		if existingNode, exists := uniqueItems[descriptions[i]]; exists && images[i].Src != "" {
+			existingNode.Value = newItem
+		} else if !exists {
+			node := &DataStructures.Node{
+				Value: newItem,
+				Next:  nil,
+			}
+			uniqueItems[descriptions[i]] = node
+		}
+
+	}
+	for _, node := range uniqueItems {
+		DataStructures.Append(response, node.Value)
 	}
 	return response
 }

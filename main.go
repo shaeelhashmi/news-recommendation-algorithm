@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"scraper/DataStructures"
@@ -25,7 +24,6 @@ func main() {
 	http.HandleFunc("/news/", func(w http.ResponseWriter, r *http.Request) {
 		q := r.URL.Query().Get("topic")
 		q2 := r.URL.Query().Get("subtopic")
-		fmt.Print(q, q2)
 		var endUrl string
 		if q2 != "" {
 			endUrl = q + "/" + q2
@@ -38,29 +36,28 @@ func main() {
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 		w.Header().Set("Cache-Control", "public, max-age=1800")
 		if r.Method == "OPTIONS" {
-			w.WriteHeader(http.StatusOK)
-			return // Exit early for OPTIONS request
+			return
 		}
 		if data, ok := cache.Load(q); ok {
-			json.NewEncoder(w).Encode(data)
+			jsonResponse := JsonResponse{Headlines: data.([]DataStructures.Response)}
+			json.NewEncoder(w).Encode(jsonResponse)
 			return
-
 		}
-
 		news := headlines.ImportHeadlines(endUrl)
 		cache.Store(endUrl, news)
 		go func() {
 			<-time.After(30 * time.Minute)
 			cache.Delete(endUrl)
 		}()
-		jsonResponse := JsonResponse{Headlines: news}
-
-		err := json.NewEncoder(w).Encode(jsonResponse)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+		if len(news) == 0 {
+			http.Error(w, "404 page not found", http.StatusNotFound)
 			return
 		}
+		jsonResponse := JsonResponse{Headlines: news}
+		json.NewEncoder(w).Encode(jsonResponse)
 	})
-
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.Error(w, "404 page not found", http.StatusNotFound)
+	})
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
