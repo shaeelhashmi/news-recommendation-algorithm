@@ -44,15 +44,16 @@ func main() {
 			return
 		}
 		news := headlines.ImportHeadlines(endUrl)
+		if len(news) == 0 {
+			http.Error(w, "404 page not found", http.StatusNotFound)
+			return
+		}
 		cache.Store(endUrl, news)
 		go func() {
 			<-time.After(30 * time.Minute)
 			cache.Delete(endUrl)
 		}()
-		if len(news) == 0 {
-			http.Error(w, "404 page not found", http.StatusNotFound)
-			return
-		}
+
 		jsonResponse := JsonResponse{Headlines: news}
 		json.NewEncoder(w).Encode(jsonResponse)
 	})

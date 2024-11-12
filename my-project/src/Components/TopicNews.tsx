@@ -23,7 +23,7 @@ export default function TopicNews() {
 
   return (
     loader?<Loader></Loader>:
-    <div className="grid grid-cols-3">
+    <div className="grid grid-cols-1 lg:grid-cols-3 justify-items-center md:grid-cols-2">
       {posts.map((post,index) => (
         <div key={index}>
         <NewsCard image={post.Img.Src} link={post.Links	} description={post.Description	}/>

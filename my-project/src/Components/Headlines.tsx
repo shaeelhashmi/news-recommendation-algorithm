@@ -8,6 +8,7 @@ export default function Headlines() {
   useEffect(() => {
     const fetchData = async () =>{
       const result = await axios.get('http://localhost:8080/news/');
+      console.log(result.data);
       setPosts(result.data.News);
       setLoader(false);
     };
@@ -15,7 +16,7 @@ export default function Headlines() {
   }, []);
 
   return (
-    loader ? <Loader></Loader> : <div className="grid grid-cols-3">
+    loader ? <Loader></Loader> : <div className="grid items-center justify-center grid-cols-3 place-content-center">
       {posts.map((post,index) => (
        <div key={index}>
        <NewsCard image={post.Img.Src} link={post.Links} description={post.Description}/>
