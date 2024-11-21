@@ -41,7 +41,6 @@ func ImportHeadlines(element string, address string) *DataStructures.LinkedList 
 				images = append(images, DataStructures.Image{Src: "", IsVideo: false})
 			}
 		}
-
 	})
 	e := collector.Visit(address)
 	if e != nil {
