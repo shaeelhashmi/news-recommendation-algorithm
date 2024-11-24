@@ -18,11 +18,11 @@ export default function News() {
       const result= await   axios.get(`http://localhost:8080/news/?topic=${topic}&subtopic=${subtopic}`);
       setPosts(result.data.News);
       const newData = [];
-      for (let i = idx; i < idx + 24 && i < result.data.News.length; i++) {
+      for (let i = idx; i < idx + 6 && i < result.data.News.length; i++) {
         newData.push(result.data.News[i]);
       }
       setData(newData);
-      setIdx(idx + 24);
+      setIdx(idx + 6);
       setLoader(false);
       setHasMore(idx<result.data.News.length);
       setLoader(false);
@@ -32,11 +32,11 @@ export default function News() {
   }, []);
   const fetchMore = () => {
     const newData = [...data];
-    for (let i = idx; i < idx + 24 && i < posts.length; i++) {
+    for (let i = idx; i < idx + 6 && i < posts.length; i++) {
       newData.push(posts[i]);
     }
     setData(newData);
-    setIdx(idx + 24);
+    setIdx(idx + 6);
     setHasMore(idx<posts.length);
   };
 
