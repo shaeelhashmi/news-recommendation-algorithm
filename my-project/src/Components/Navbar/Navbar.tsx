@@ -14,44 +14,20 @@ export default function Navbar() {
       <NavLinks link='/' text='Headlines'></NavLinks>
       </div>
       <div>
+      <NavLinks link='/politics' text='Politics'></NavLinks>
+      </div>
+      <div>
+      <NavLinks link='/business' text='Business'></NavLinks>
+      </div>
+      <div>
+      <NavLinks link='/health' text='Health'></NavLinks>
+      </div>
+      <div>
       <NavLinks link='/world' text='World' subLinks={['/world/africa','/world/americas','/world/asia','/world/australia','/world/china','/world/europe','/world/india','/world/middle-east','/world/united-kingdom']} subText={['Africa','Americas','Asia','Australia','China','Europe','India','Middle East','United Kingdom']}></NavLinks>
       </div>
-      
-      <div className="flex justify-between w-full ">
-      <div className={`my-4 font-serif mx-4 xl:my-0 xl:block `}><a href="/politics">Politics</a></div>
-      <div className="justify-end cursor-pointer"><MenuBtn></MenuBtn></div>
+      <div>
+        <NavLinks text='More' subLinks={['/entertainment','/style','/travel','/sports']} subText={['Entertainment','Style','Travel','Sports']}></NavLinks>
       </div>
-    
-      <div className="flex justify-between w-full ">
-      <div className={`my-4 font-serif mx-4 xl:my-0 xl:block `}><a href="/business">Business</a></div>
-      <div className="justify-end cursor-pointer"><MenuBtn></MenuBtn></div>
-      </div>
-  
-      <div className="flex justify-between w-full ">
-      <div className={`my-4 font-serif mx-4 xl:my-0 xl:block `}><a href="/health">Health</a></div>
-      <div className="justify-end cursor-pointer"><MenuBtn></MenuBtn></div>
-      </div>
-    
-      <div className="flex justify-between w-full ">
-      <div className={`my-4 font-serif mx-4 xl:my-0 xl:block `}><a href="/entertainment">Entertainment</a></div>
-      <div className="justify-end cursor-pointer"><MenuBtn></MenuBtn></div>
-      </div>
-     
-      <div className="flex justify-between w-full ">
-      <div className={`my-4 font-serif mx-4 xl:my-0 xl:block `}><a href="/style">Style</a></div>
-      <div className="justify-end cursor-pointer"><MenuBtn></MenuBtn></div>
-      </div>
-     
-      <div className="flex justify-between w-full ">
-      <div className={`my-4 font-serif mx-4 xl:my-0 xl:block `}><a href="/travel">Travel</a></div>
-      <div className="justify-end cursor-pointer"><MenuBtn></MenuBtn></div>
-      </div>
-   
-      <div className="flex justify-between w-full ">
-      <div className={`my-4 font-serif mx-4 xl:my-0 xl:block `}><a href="/sports">Sports</a></div> 
-      <div className="justify-end cursor-pointer"><MenuBtn></MenuBtn></div>
-      </div>
-  
       </div>
     </div>
   )
