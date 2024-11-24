@@ -15,7 +15,7 @@ export default function News() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const result= await   axios.get(`http://localhost:8080/news/?topic=${topic}&?subtopic=${subtopic}`);
+      const result= await   axios.get(`http://localhost:8080/news/?topic=${topic}&subtopic=${subtopic}`);
       setPosts(result.data.News);
       const newData = [];
       for (let i = idx; i < idx + 24 && i < result.data.News.length; i++) {
