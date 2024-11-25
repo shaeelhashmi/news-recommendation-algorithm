@@ -48,11 +48,11 @@ export default function TopicNews() {
        next={fetchMore}
        hasMore={hasMore}
        loader={<InfiniteScrollLoader></InfiniteScrollLoader>}
-       className="grid grid-cols-1 lg:grid-cols-3 justify-items-center md:grid-cols-2"
+       className="grid w-[80vw] grid-cols-1   lg:grid-cols-2 justify-items-center justify-center ml-48" 
        >
        {data.map((post,index) => (
         <div key={index}>
-        <NewsCard image={post.Img.Src} link={post.Links} description={post.Description}/>
+        <NewsCard image={post.Img} link={post.Links} description={post.Description}/>
         </div>
        ))}
        </InfiniteScroll>

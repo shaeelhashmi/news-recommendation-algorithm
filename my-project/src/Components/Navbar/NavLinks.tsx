@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import MenuBtn from "../SVG/MenuBtn"
 interface NavLinksProps {
     link?:string,
@@ -8,22 +8,33 @@ interface NavLinksProps {
 }
 export default function NavLinks(props:NavLinksProps) {
     const [isOpen, setIsOpen] = useState(false)
+    const [height, setHeight] = useState(0)
+    useEffect(() => {
+      let counter=1;
+      if(props.subLinks)
+      {
+      for (let i = 0; i < props.subLinks?.length; i++) {
+        counter++;
+      }
+    }
+    setHeight(40*counter)
+    },[])
   return (
     <>
-      <div className="flex justify-between  xl:justify-center xl:w-[150px] w-full">
-      <div className={`my-4 font-serif xl:mx-1 mx-4 xl:my-0 xl:block `}>{props.link?<a href={props.link}>{props.text}</a>:<span>{props.text}</span>}</div>
+      <div className="flex justify-between w-full transition-all duration-500">
+      <div className={`my-4 font-serif `}>{props.link?<a href={props.link}>{props.text}</a>:<span>{props.text}</span>}</div>
     
-      {props.subLinks &&<div className="justify-end cursor-pointer"
+      {props.subLinks &&<div className="relative justify-end cursor-pointer top-4"
       onClick={()=>{
         setIsOpen(!isOpen)
       }}><MenuBtn></MenuBtn></div>
     }
       </div>
-    {  props.subLinks &&<div className={` bg-[#2a17a4] xl:w-[150px] w-full ${isOpen?'scale-y-100 h-72':'scale-y-0 h-2'}  transition-all duration-500 origin-top xl:h-fit xl:overflow-visible overflow-y-auto overflow-x-hidden xl:py-2 xl:mx-1 mx-0`}>
+    {  props.subLinks &&<div className={` bg-[#2a17a4]  w-full ${isOpen?`scale-y-100 `:'scale-y-0 '}  transition-all duration-500 origin-top pr-2`} style={{ height: isOpen ? `${height}px` : '0px' }}>
         {
             props.subLinks?.map((link, index)=>{ 
                 return (
-                    <div className="mb-4 xl:my-0" onMouseEnter={(e: React.MouseEvent<HTMLDivElement>)=>{
+                    <div className="mb-4" onMouseEnter={(e: React.MouseEvent<HTMLDivElement>)=>{
                         const secondChild = e.currentTarget.children[1];
                         secondChild.classList.add('opacity-75')
                       }}
@@ -32,7 +43,7 @@ export default function NavLinks(props:NavLinksProps) {
                         secondChild.classList.remove('opacity-75')
                       }}
                       key={index}>
-                        <div className="z-50 w-full mx-4 text-center xl:mx-0"><a href={link}>{props.subText ? props.subText[index] : ''}</a></div>
+                        <div className="z-50 w-full mx-3"><a href={link}>{props.subText ? props.subText[index] : ''}</a></div>
                         <div className="w-full h-1 transition-all duration-500 bg-white opacity-15"></div>
                        </div>
                 )
