@@ -24,7 +24,7 @@ export default function NavLinks(props:NavLinksProps) {
       <div className="flex justify-between w-full transition-all duration-500">
       <div className={`my-4 font-serif `}>{props.link?<a href={props.link}>{props.text}</a>:<span>{props.text}</span>}</div>
     
-      {props.subLinks &&<div className="relative justify-end cursor-pointer top-4"
+      {props.subLinks &&<div className="relative justify-end cursor-pointer top-4 mr-9"
       onClick={()=>{
         setIsOpen(!isOpen)
       }}><MenuBtn></MenuBtn></div>

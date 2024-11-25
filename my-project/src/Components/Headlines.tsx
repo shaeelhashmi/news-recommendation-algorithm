@@ -65,7 +65,7 @@ export default function Headlines(props:any) {
       next={fetchMore}
       hasMore={hasMore}
       loader={<InfiniteScrollLoader></InfiniteScrollLoader>}
-      className="grid w-[80vw] grid-cols-1   lg:grid-cols-2 justify-items-center justify-center ml-48" 
+      className="grid xl:w-[80vw] grid-cols-1   md:grid-cols-2 justify-items-center justify-center xl:ml-48" 
       >
       {data.map((post,index) => (
        <div key={index}>

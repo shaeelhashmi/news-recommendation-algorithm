@@ -1,9 +1,19 @@
 import NavLinks from "./NavLinks"
-
+import MenuBtn from "../SVG/MenuBtn"
+import { useState } from "react"
 export default function SideBar() {
+  const [show, setShow] = useState(false)
   return (
-    <aside className="fixed top-14 left-0 w-[250px] h-screen bg-[#2a17a4]  flex flex-col text-white overflow-auto pl-8 sidebar">
-    <div>
+    <>
+    <div className="sticky flex flex-row justify-between pl-8 text-white xl:hidden top-14 bg-[#2a17a4] h-11 w-full">
+           <div>More</div><button className="mr-[3.8rem]" onClick={()=>{
+            setShow(!show)
+           }}><MenuBtn></MenuBtn></button>
+      </div>
+    <aside className={`fixed xl:top-14 top-24 left-0 xl:w-[250px] xl:h-screen bg-[#2a17a4]  flex flex-col text-white overflow-auto pl-8 sidebar w-full ${show?'h-72':'h-0'} duration-500 transition-all overflow-x-hidden`}>
+      
+      <div >
+      <div>
       <NavLinks link='/' text='Headlines'></NavLinks>
       </div>
       <div>
@@ -32,7 +42,8 @@ export default function SideBar() {
       <NavLinks text='Sports' link='/sports'></NavLinks>
     </div>
       </div>
-      
+      </div>
     </aside>
+    </>
   )
 }
