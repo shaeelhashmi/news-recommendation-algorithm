@@ -51,6 +51,7 @@ func ImportHeadlines(element string, address string) *DataStructures.LinkedList 
 	}
 	response := DataStructures.NewLinkedList()
 	uniqueItems := make(map[string]*DataStructures.Node)
+	order := []string{}
 	for i := 0; i < len(images); i++ {
 		newItem := DataStructures.Response{Img: images[i], Links: urls[i], Description: descriptions[i]}
 
@@ -62,11 +63,12 @@ func ImportHeadlines(element string, address string) *DataStructures.LinkedList 
 				Next:  nil,
 			}
 			uniqueItems[descriptions[i]] = node
+			order = append(order, descriptions[i])
 		}
 
 	}
-	for _, node := range uniqueItems {
-		DataStructures.Append(response, node.Value)
+	for _, key := range order {
+		DataStructures.Append(response, uniqueItems[key].Value)
 	}
 	return response
 }
