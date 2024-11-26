@@ -10,9 +10,8 @@ export default function SideBar() {
             setShow(!show)
            }}><MenuBtn></MenuBtn></button>
       </div>
-    <aside className={`fixed xl:top-14 top-24 left-0 xl:w-[250px] xl:h-screen bg-[#2a17a4]  flex flex-col text-white overflow-auto pl-8 sidebar w-full ${show?'h-72':'h-0'} duration-500 transition-all overflow-x-hidden`}>
-      
-      <div >
+    <aside className={`fixed xl:top-14 top-24 left-0 xl:w-[250px] xl:h-screen bg-[#2a17a4]  flex flex-col text-white overflow-auto pl-8 sidebar w-full ${show?'h-72':'h-0'} duration-500 transition-all overflow-x-hidden`}>  
+      <div>
       <div>
       <NavLinks link='/' text='Headlines'></NavLinks>
       </div>
@@ -23,7 +22,7 @@ export default function SideBar() {
       <NavLinks link='/business' text='Business'></NavLinks>
       </div>
       <div>
-      <NavLinks link='/health' text='Health'></NavLinks>
+      <NavLinks link='/health' text='Health' ></NavLinks>
       </div>
       <div>
       <NavLinks link='/world' text='World' subLinks={['/world/africa','/world/americas','/world/asia','/world/australia','/world/china','/world/europe','/world/india','/world/middle-east','/world/united-kingdom']} subText={['Africa','Americas','Asia','Australia','China','Europe','India','Middle East','United Kingdom']}></NavLinks>
@@ -40,6 +39,12 @@ export default function SideBar() {
     </div>
     <div>
       <NavLinks text='Sports' link='/sports'></NavLinks>
+    </div>
+    <div>
+      <NavLinks text='Weather' link='/weather'></NavLinks>
+    </div>
+    <div>
+      <NavLinks text='Science' link='/science'></NavLinks>
     </div>
       </div>
       </div>

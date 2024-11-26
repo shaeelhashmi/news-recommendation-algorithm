@@ -16,6 +16,8 @@ export default function News(props:any) {
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [sortData, setSortData] = useState<any[]>([]);
   useEffect(() => {
+    
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     if(!selector){
       const newData = [];
       for (let i = 0; i < idx && i < posts.length; i++) {
@@ -58,10 +60,6 @@ export default function News(props:any) {
     setIdx(idx + 6);
     setHasMore(idx<posts.length);
   };
-
-  useEffect(() => {
-    console.log(posts);
-  }, [posts]);
 
   return (
     loader?<Loader></Loader>:

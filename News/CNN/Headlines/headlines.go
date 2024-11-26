@@ -5,10 +5,13 @@ import (
 	Scraper "scraper/News/CNN/Scrapper"
 )
 
-func ImportHeadlines(a string) []DataStructures.Response {
+func ImportHeadlines(a string, ele string) []DataStructures.Response {
 
 	query := "https://edition.cnn.com/" + a
 
-	responses := Scraper.ImportHeadlines("div.card", query)
+	responses := Scraper.ImportHeadlines(ele, query)
 	return DataStructures.GetResponse(responses)
+}
+func ImportLinks(a string) []DataStructures.LinksResponse {
+	return Scraper.ImportLinks(a)
 }

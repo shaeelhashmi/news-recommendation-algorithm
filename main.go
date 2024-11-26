@@ -19,8 +19,19 @@ var cache = &sync.Map{}
 type JsonResponse struct {
 	Headlines []DataStructures.Response `json:"News"`
 }
+type LinksResponse struct {
+	Links []DataStructures.LinksResponse `json:"Links"`
+}
 
 func main() {
+	http.HandleFunc("/links", func(w http.ResponseWriter, r *http.Request) {
+		Links := headlines.ImportLinks("nav a.subnav__section-link")
+		enableCors(&w)
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		json.NewEncoder(w).Encode(LinksResponse{Links: Links})
+	})
 	http.HandleFunc("/news/", func(w http.ResponseWriter, r *http.Request) {
 		q := r.URL.Query().Get("topic")
 		q2 := r.URL.Query().Get("subtopic")
@@ -43,7 +54,7 @@ func main() {
 			json.NewEncoder(w).Encode(jsonResponse)
 			return
 		}
-		news := headlines.ImportHeadlines(endUrl)
+		news := headlines.ImportHeadlines(endUrl, "div.card")
 		if len(news) == 0 {
 			http.Error(w, "404 page not found", http.StatusNotFound)
 			return

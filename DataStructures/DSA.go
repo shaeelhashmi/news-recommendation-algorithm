@@ -13,7 +13,14 @@ type Node struct {
 	Value Response
 	Next  *Node
 }
-
+type Links struct {
+	Text string
+	URL  string
+}
+type LinksResponse struct {
+	Links    Links
+	SubLinks []Links
+}
 type LinkedList struct {
 	Head *Node
 	Tail *Node

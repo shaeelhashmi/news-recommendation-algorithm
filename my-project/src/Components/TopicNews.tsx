@@ -16,6 +16,8 @@ const [data, setData] = useState<any[]>([]);
 const [hasMore, setHasMore] = useState<boolean>(true);
 const [sortData, setSortData] = useState<any[]>([]);
 useEffect(() => {
+  
+  window.scrollTo({ top: 0, behavior: 'smooth' });
   if(!selector){
     const newData = [];
     for (let i = 0; i < idx && i < posts.length; i++) {

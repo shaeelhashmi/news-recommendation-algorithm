@@ -72,3 +72,42 @@ func ImportHeadlines(element string, address string) *DataStructures.LinkedList 
 	}
 	return response
 }
+func ImportLinks(element string) []DataStructures.LinksResponse {
+	var text []string
+	var url []string
+	collector := colly.NewCollector()
+	var Links []DataStructures.LinksResponse
+	collector.OnHTML(element, func(e *colly.HTMLElement) {
+		link := e.Attr("href")
+		Text := strings.TrimSpace(e.Text)
+		if link != "" {
+			url = append(url, link)
+			text = append(text, Text)
+
+		}
+		var sublinks string
+		var subText string
+		var SubLinks []DataStructures.Links
+		e.ForEach("a.subnav__subsection-link", func(i int, el *colly.HTMLElement) {
+			sublinks = el.Attr("href")
+			subText = strings.TrimSpace(el.Text)
+			SubLinks = append(SubLinks, DataStructures.Links{Text: subText, URL: sublinks})
+		})
+		Links = append(Links, DataStructures.LinksResponse{Links: DataStructures.Links{Text: Text, URL: link}, SubLinks: SubLinks})
+	})
+	collector.Visit("https://edition.cnn.com/")
+	return Links
+}
+func ImportSubLinks(element string) []DataStructures.Links {
+	var SubLinks []DataStructures.Links
+	collector := colly.NewCollector()
+	collector.OnHTML(element, func(e *colly.HTMLElement) {
+		link := e.Attr("href")
+		Text := strings.TrimSpace(e.Text)
+		if link != "" {
+			SubLinks = append(SubLinks, DataStructures.Links{Text: Text, URL: link})
+		}
+	})
+	collector.Visit("https://edition.cnn.com/")
+	return SubLinks
+}
