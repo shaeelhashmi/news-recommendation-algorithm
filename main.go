@@ -25,7 +25,7 @@ type LinksResponse struct {
 
 func main() {
 	http.HandleFunc("/links", func(w http.ResponseWriter, r *http.Request) {
-		Links := headlines.ImportLinks("nav a.subnav__section-link")
+		Links := headlines.ImportLinks("nav li.subnav__section")
 		enableCors(&w)
 		w.Header().Set("Content-Type", "application/json")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")

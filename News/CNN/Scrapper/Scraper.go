@@ -73,41 +73,52 @@ func ImportHeadlines(element string, address string) *DataStructures.LinkedList 
 	return response
 }
 func ImportLinks(element string) []DataStructures.LinksResponse {
-	var text []string
-	var url []string
 	collector := colly.NewCollector()
-	var Links []DataStructures.LinksResponse
+	Links := make(map[string]DataStructures.LinksResponse)
+	uniqueUrls := make(map[string]bool)
+	var order []string
 	collector.OnHTML(element, func(e *colly.HTMLElement) {
-		link := e.Attr("href")
-		Text := strings.TrimSpace(e.Text)
-		if link != "" {
-			url = append(url, link)
-			text = append(text, Text)
 
+		url, exist := e.DOM.Find("a.subnav__section-link").Attr("href")
+		if !exist || !ValidLink(url) {
+			return
 		}
-		var sublinks string
-		var subText string
-		var SubLinks []DataStructures.Links
-		e.ForEach("a.subnav__subsection-link", func(i int, el *colly.HTMLElement) {
-			sublinks = el.Attr("href")
-			subText = strings.TrimSpace(el.Text)
-			SubLinks = append(SubLinks, DataStructures.Links{Text: subText, URL: sublinks})
+		if uniqueUrls[url] {
+			return
+		}
+		uniqueUrls[url] = true
+		var subLinks []DataStructures.Links
+		e.ForEach("a.subnav__subsection-link", func(_ int, el *colly.HTMLElement) {
+			url := el.Attr("href")
+			text := el.Text
+			if !ValidLink(url) {
+				return
+			}
+			if !validTxt(text) {
+				return
+			}
+			subLinks = append(subLinks, DataStructures.Links{Text: strings.TrimSpace(el.Text), URL: el.Attr("href")})
 		})
-		Links = append(Links, DataStructures.LinksResponse{Links: DataStructures.Links{Text: Text, URL: link}, SubLinks: SubLinks})
-	})
-	collector.Visit("https://edition.cnn.com/")
-	return Links
-}
-func ImportSubLinks(element string) []DataStructures.Links {
-	var SubLinks []DataStructures.Links
-	collector := colly.NewCollector()
-	collector.OnHTML(element, func(e *colly.HTMLElement) {
-		link := e.Attr("href")
-		Text := strings.TrimSpace(e.Text)
-		if link != "" {
-			SubLinks = append(SubLinks, DataStructures.Links{Text: Text, URL: link})
+		text := strings.TrimSpace(e.DOM.Find("a.subnav__section-link").Text())
+		if !validTxt(text) {
+			return
 		}
+		Links[url] = DataStructures.LinksResponse{Links: DataStructures.Links{Text: text, URL: url}, SubLinks: subLinks}
+		order = append(order, url)
 	})
 	collector.Visit("https://edition.cnn.com/")
-	return SubLinks
+	var answer []DataStructures.LinksResponse
+	for _, key := range order {
+		answer = append(answer, Links[key])
+	}
+	return answer
+}
+func ValidLink(url string) bool {
+	url = strings.TrimSpace(url)
+	NewUrl := strings.Split(url, "/")
+	lastElement := NewUrl[len(NewUrl)-1]
+	return !strings.Contains(strings.ToLower(lastElement), "cnn")
+}
+func validTxt(txt string) bool {
+	return txt != "" && !strings.Contains(strings.ToLower(txt), "video") && !strings.Contains(strings.ToLower(txt), "live") && !strings.Contains(strings.ToLower(txt), "watch") && !strings.Contains(strings.ToLower(txt), "cnn") && !strings.Contains(strings.ToLower(txt), "tv") && !strings.Contains(strings.ToLower(txt), "listed") && !strings.Contains(strings.ToLower(txt), "edition") && !strings.Contains(strings.ToLower(txt), "Features")
 }
