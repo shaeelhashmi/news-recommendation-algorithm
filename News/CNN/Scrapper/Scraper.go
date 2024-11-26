@@ -114,11 +114,10 @@ func ImportLinks(element string) []DataStructures.LinksResponse {
 	return answer
 }
 func ValidLink(url string) bool {
-	url = strings.TrimSpace(url)
-	NewUrl := strings.Split(url, "/")
-	lastElement := NewUrl[len(NewUrl)-1]
-	return !strings.Contains(strings.ToLower(lastElement), "cnn")
+	url = strings.Replace(url, "https://edition.cnn.com", "", 1)
+	return !strings.Contains(url, "cnn") && url != "" && strings.Count(url, "/") <= 2
 }
 func validTxt(txt string) bool {
-	return txt != "" && !strings.Contains(strings.ToLower(txt), "video") && !strings.Contains(strings.ToLower(txt), "live") && !strings.Contains(strings.ToLower(txt), "watch") && !strings.Contains(strings.ToLower(txt), "cnn") && !strings.Contains(strings.ToLower(txt), "tv") && !strings.Contains(strings.ToLower(txt), "listed") && !strings.Contains(strings.ToLower(txt), "edition") && !strings.Contains(strings.ToLower(txt), "Features")
+	lowerCase := strings.ToLower(txt)
+	return !strings.Contains(lowerCase, "cnn") && txt != "" && !strings.Contains(lowerCase, "listen") && !strings.Contains(lowerCase, "about") && !strings.Contains(lowerCase, "features")
 }
