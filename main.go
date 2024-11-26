@@ -30,6 +30,15 @@ func main() {
 		w.Header().Set("Content-Type", "application/json")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		w.Header().Set("Cache-Control", "public, max-age=1800")
+		if r.Method == "OPTIONS" {
+			return
+		}
+		if data, ok := cache.Load("links"); ok {
+			json.NewEncoder(w).Encode(LinksResponse{Links: data.([]DataStructures.LinksResponse)})
+			return
+		}
+		cache.Store("links", Links)
 		json.NewEncoder(w).Encode(LinksResponse{Links: Links})
 	})
 	http.HandleFunc("/news/", func(w http.ResponseWriter, r *http.Request) {

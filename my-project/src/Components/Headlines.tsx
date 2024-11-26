@@ -39,7 +39,7 @@ export default function Headlines(props:any) {
       const newData = [];
       const sortedPosts = props.Sort([...result.data.News]);
       setSortData(sortedPosts);
-      for (let i = idx; i < idx + 6 && i < result.data.News.length; i++) {
+      for (let i = idx; i < idx + 4 && i < result.data.News.length; i++) {
         newData.push(result.data.News[i]);
       }
       
@@ -52,11 +52,11 @@ export default function Headlines(props:any) {
   }, []);
   const fetchMore = () => {
       const newData = [...data];
-      for (let i = idx; i < idx + 6 && i < posts.length; i++) {
+      for (let i = idx; i < idx + 4 && i < posts.length; i++) {
         newData.push(posts[i]);
       }
       setData(newData);
-      setIdx(idx + 6);
+      setIdx(idx + 4);
       setHasMore(idx<posts.length);
     };
 

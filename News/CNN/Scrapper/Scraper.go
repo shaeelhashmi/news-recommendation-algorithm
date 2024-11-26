@@ -119,5 +119,5 @@ func ValidLink(url string) bool {
 }
 func validTxt(txt string) bool {
 	lowerCase := strings.ToLower(txt)
-	return !strings.Contains(lowerCase, "cnn") && txt != "" && !strings.Contains(lowerCase, "listen") && !strings.Contains(lowerCase, "about") && !strings.Contains(lowerCase, "features")
+	return !strings.Contains(lowerCase, "cnn") && txt != "" && !strings.Contains(lowerCase, "listen") && !strings.Contains(lowerCase, "about") && !strings.Contains(lowerCase, "features") && !strings.Contains(lowerCase, "Watch")
 }

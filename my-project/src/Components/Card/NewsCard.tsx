@@ -15,7 +15,7 @@ export default function NewsCard(props:props) {
             {props.image.IsVideo ? (
           <video src={props.image.Src === '' ? images : props.image.Src} className="object-cover w-full h-full" controls />
             ) : (
-          <img src={props.image.Src === '' ? images : props.image.Src} alt="Error loading image" className="object-cover w-full h-full" />
+          <img src={props.image.Src === '' ? images : props.image.Src} alt={images} className="object-cover w-full h-full" />
             )}
         </div>
         <div className="w-full h-[80px]  text-sm font-thin p-2">{props.description}</div>
