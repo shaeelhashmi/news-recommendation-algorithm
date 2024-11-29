@@ -2,8 +2,8 @@ package main
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
+	auth "scraper/Auth"
 	"scraper/DataStructures"
 	headlines "scraper/News/CNN/Headlines"
 	"sync"
@@ -24,7 +24,9 @@ type LinksResponse struct {
 }
 
 func main() {
-	http.HandleFunc("/links", func(w http.ResponseWriter, r *http.Request) {
+	auth.ConnectDB()
+	mux := http.NewServeMux()
+	mux.HandleFunc("/links", func(w http.ResponseWriter, r *http.Request) {
 		Links := headlines.ImportLinks("nav li.subnav__section")
 		enableCors(&w)
 		w.Header().Set("Content-Type", "application/json")
@@ -41,7 +43,7 @@ func main() {
 		cache.Store("links", Links)
 		json.NewEncoder(w).Encode(LinksResponse{Links: Links})
 	})
-	http.HandleFunc("/news/", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/news/", func(w http.ResponseWriter, r *http.Request) {
 		q := r.URL.Query().Get("topic")
 		q2 := r.URL.Query().Get("subtopic")
 		var endUrl string
@@ -77,8 +79,11 @@ func main() {
 		jsonResponse := JsonResponse{Headlines: news}
 		json.NewEncoder(w).Encode(jsonResponse)
 	})
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/signup", auth.SignupHandler)
+	mux.HandleFunc("/login", auth.LoginHandler)
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "404 page not found", http.StatusNotFound)
 	})
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	http.ListenAndServe(":8080", auth.SessionManager.LoadAndSave(mux))
+
 }
