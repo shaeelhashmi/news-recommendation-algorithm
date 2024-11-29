@@ -6,6 +6,7 @@ import Loader from './Loader/Loader';
 import InfiniteScrollLoader from './Loader/InfiniteScrollLoader';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useSelector } from 'react-redux';
+import Navbar from './Navbar/Navbar';
 export default function News(props:any) {
   const selector = useSelector((state: any) => state.SortState.sort);
   const [posts, setPosts] = useState<any[]>([]);
@@ -63,6 +64,8 @@ export default function News(props:any) {
 
   return (
     loader?<Loader></Loader>:
+    <>
+    <Navbar></Navbar>
     <div  >
    <InfiniteScroll
       dataLength={data.length}
@@ -78,5 +81,6 @@ export default function News(props:any) {
       ))}
       </InfiniteScroll>
   </div>
+  </>
   );
 }

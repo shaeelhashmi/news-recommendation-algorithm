@@ -4,7 +4,8 @@ import Headlines from './Components/Headlines'
 import News from './Components/News'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import TopicNews from './Components/TopicNews'
-import Navbar from './Components/Navbar/Navbar';
+import Login from './Components/Auth/Login'
+
 function App() {
   const sortDescriptions:any = (arr: any[]) => {
     if (arr.length <= 1) return arr;
@@ -19,11 +20,11 @@ function App() {
 
   return (
     <Router>
-    <Navbar></Navbar>
     <Routes>
     <Route path='/' element={<Headlines Sort={sortDescriptions}/>}></Route>
     <Route path='/:topic/:subtopic' element={<News  Sort={sortDescriptions}></News>}></Route>
     <Route path='/:topic' element={<TopicNews  Sort={sortDescriptions}/>}></Route>
+    <Route path='/auth/login' element={<Login></Login>}></Route>
     </Routes>
     </Router>
   )

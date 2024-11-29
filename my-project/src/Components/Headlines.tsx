@@ -5,6 +5,7 @@ import Loader from './Loader/Loader';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import InfiniteScrollLoader from './Loader/InfiniteScrollLoader';
 import { useSelector } from 'react-redux';
+import Navbar from './Navbar/Navbar';
 export default function Headlines(props:any) {
   const selector = useSelector((state: any) => state.SortState.sort);
   const [posts, setPosts] = useState<any[]>([]);
@@ -61,7 +62,8 @@ export default function Headlines(props:any) {
     };
 
   return (
-    loader ? <Loader></Loader> :  
+    loader ? <Loader></Loader> : 
+    <><Navbar></Navbar>
     <div >
       <InfiniteScroll
       dataLength={data.length}
@@ -77,5 +79,6 @@ export default function Headlines(props:any) {
       ))}
       </InfiniteScroll>
     </div>
+    </> 
   );
 }
