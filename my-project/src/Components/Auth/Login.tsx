@@ -7,7 +7,12 @@ export default function Login() {
     const [username, setUsername] = useState("");
     const handleSubmit = async (e: any) => {
         try {
+        
             e.preventDefault();
+            if(e.target.username.value.trim().length===0 || e.target.password.value.length===0){
+                setError("Username or password  cannot be empty");
+                return;
+            }
             const username = e.target.username.value;
             const password = e.target.password.value;
             const response = await axios.post(

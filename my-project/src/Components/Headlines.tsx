@@ -37,7 +37,7 @@ export default function Headlines(props:any) {
   useEffect(() => {
     const checkLogin=async()=>{
       try{
-        await axios.get(("http://localhost:8080/checklogin"),{withCredentials:true});
+        console.log(await axios.get(("http://localhost:8080/checklogin"),{withCredentials:true}));  
       }catch(error:any){
         if(error.response.status===401){
           navigate("/auth/login");

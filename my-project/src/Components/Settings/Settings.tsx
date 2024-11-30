@@ -8,7 +8,10 @@ export default function Settings() {
     const[error,setError]=useState("");
     const handleSubmit=async(e:any)=>{
         try{
-          console.log(username);
+          if(e.target.username.value.trim().length===0 ){
+            setError("Username  cannot be empty");
+            return;
+        }
             e.preventDefault();
             const response=await axios.post("http://localhost:8080/changeusername",new URLSearchParams({
                 newUsername:username,
@@ -56,16 +59,16 @@ export default function Settings() {
 }
     const navigate = useNavigate();
     useEffect(() => {
-        const checkLogin=async()=>{
-          try{
-            await axios.get(("http://localhost:8080/checklogin"),{withCredentials:true});
-          }catch(error:any){
-            if(error.response.status===401){
-              navigate("/auth/login");
-          }
+      const checkLogin=async()=>{
+        try{
+          await axios.get(("http://localhost:8080/checklogin"),{withCredentials:true});
+        }catch(error:any){
+          if(error.response.status===401){
+            navigate("/auth/login");
         }
       }
-        checkLogin();
+    }
+      checkLogin();
     }, [])
   return (
     <>
