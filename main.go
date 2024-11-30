@@ -8,10 +8,13 @@ import (
 	headlines "scraper/News/CNN/Headlines"
 	"sync"
 	"time"
+
+	"github.com/rs/cors"
 )
 
 func enableCors(w *http.ResponseWriter) {
-	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+	(*w).Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
+	(*w).Header().Set("Access-Control-Allow-Credentials", "true")
 }
 
 var cache = &sync.Map{}
@@ -24,6 +27,13 @@ type LinksResponse struct {
 }
 
 func main() {
+
+	corsHandler := cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:5173"}, // React default port
+		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
+		AllowedHeaders:   []string{"Content-Type"},
+		AllowCredentials: true, // Allow credentials (cookies)
+	})
 	auth.ConnectDB()
 	mux := http.NewServeMux()
 	mux.HandleFunc("/links", func(w http.ResponseWriter, r *http.Request) {
@@ -79,12 +89,12 @@ func main() {
 		jsonResponse := JsonResponse{Headlines: news}
 		json.NewEncoder(w).Encode(jsonResponse)
 	})
-	mux.HandleFunc("/signup", auth.SignupHandler)
 	mux.HandleFunc("/login", auth.LoginHandler)
-	// mux.HandleFunc("/check/session/exists", auth.CheckSessionExists)
+
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "404 page not found", http.StatusNotFound)
 	})
-	http.ListenAndServe(":8080", auth.SessionManager.LoadAndSave(mux))
+	handler := corsHandler.Handler(mux)
+	http.ListenAndServe(":8080", handler)
 
 }

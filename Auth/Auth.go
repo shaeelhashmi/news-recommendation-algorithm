@@ -1,38 +1,52 @@
 package Auth
 
 import (
-	"crypto/rand"
 	"crypto/sha512"
 	"database/sql"
 	"encoding/hex"
-	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"os"
 
-	"github.com/alexedwards/scs/mysqlstore"
-	"github.com/alexedwards/scs/v2"
 	"github.com/go-sql-driver/mysql"
+	"github.com/gorilla/sessions"
 	"github.com/joho/godotenv"
 )
 
 var db *sql.DB
-var SessionManager *scs.SessionManager
 
-type signupData struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-	Salt     []byte
+// type signupData struct {
+// 	Username string `json:"username"`
+// 	Password string `json:"password"`
+// 	Salt     []byte
+// }
+
+func CheckSessionExists(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
+	w.Header().Set("Content-Type", "application/json")
+	session, err := store.Get(r, "user-session")
+	if err != nil {
+		http.Error(w, "Unable to get session", http.StatusInternalServerError)
+		return
+	}
+	if session.Values["userName"] == nil {
+		http.Error(w, "No session found", http.StatusUnauthorized)
+		return
+	}
+
+	w.Write([]byte("Session found"))
 }
-
 func enableCors(w *http.ResponseWriter) {
-	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+	(*w).Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
+	(*w).Header().Set("Access-Control-Allow-Credentials", "true")
 }
 func ConnectDB() {
-	godotenv.Load()
-	// Establish connection to MySQL.
+	err1 := godotenv.Load()
+	if err1 != nil {
+
+		log.Fatal("Error loading .env file")
+	}
 	cfg := mysql.Config{
 		User:   os.Getenv("DBUSER"),
 		Passwd: os.Getenv("DBPASS"),
@@ -51,27 +65,15 @@ func ConnectDB() {
 	if pingErr != nil {
 		log.Fatal(pingErr)
 	}
+
 	fmt.Println("Connected!")
 
-	// Initialize a new session manager and configure it to use mysqlstore as the session store.
-	SessionManager = scs.New()
-	SessionManager.Store = mysqlstore.New(db)
 }
-func generateRandomSalt(saltSize int) []byte {
 
-	var salt = make([]byte, saltSize)
+var (
+	store = sessions.NewCookieStore([]byte("secret-key"))
+)
 
-	_, err := rand.Read(salt[:])
-
-	if err != nil {
-
-		panic(err)
-
-	}
-
-	return salt
-
-}
 func hashPassword(password string, salt []byte) string {
 
 	var passwordBytes = []byte(password)
@@ -89,194 +91,50 @@ func hashPassword(password string, salt []byte) string {
 	return hashedPasswordHex
 
 }
-
-func SignupHandler(w http.ResponseWriter, r *http.Request) {
-	enableCors(&w)
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		http.Error(w, "Error reading request body", http.StatusInternalServerError)
-		return
-	}
-	defer r.Body.Close()
-	var data signupData
-	err = json.Unmarshal(body, &data)
-	if err != nil {
-		fmt.Print(err)
-		http.Error(w, "Error unmarshaling JSON", http.StatusInternalServerError)
-		return
-	}
-	fmt.Print(data.Username, data.Password)
-	salt := generateRandomSalt(16)
-	hashedPassword := hashPassword(data.Password, salt)
-	stmt, err := db.Prepare("INSERT INTO users (username, password,salt) VALUES (?, ?, ?)")
-	if err != nil {
-		http.Error(w, "Database error", http.StatusInternalServerError)
-		return
-	}
-	defer stmt.Close()
-
-	_, err = stmt.Exec(data.Username, hashedPassword, salt)
-	if err != nil {
-		fmt.Println(err)
-		if mysqlErr, ok := err.(*mysql.MySQLError); ok && mysqlErr.Number == 1062 {
-			http.Error(w, "Username already exists", http.StatusConflict)
+func LoginHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	if r.Method == http.MethodPost {
+		username := r.FormValue("username")
+		password := r.FormValue("password")
+		session, err := store.Get(r, "user-session")
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Internal server error"))
 			return
 		}
-		http.Error(w, "Failed to insert user", http.StatusInternalServerError)
-		return
-	}
-
-	fmt.Fprintf(w, "User %s successfully signed up!", data.Username)
-}
-func LoginHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodOptions {
-		enableCors(&w)
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-		w.WriteHeader(http.StatusOK)
-		return
-	}
-	enableCors(&w)
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		http.Error(w, "Error reading request body", http.StatusInternalServerError)
-		return
-	}
-	defer r.Body.Close()
-
-	var data signupData
-	err = json.Unmarshal(body, &data)
-	if err != nil {
-		http.Error(w, "Error unmarshaling JSON", http.StatusInternalServerError)
-		return
-	}
-
-	// Modify the SQL query to select both password and salt
-	stmt, err := db.Prepare("SELECT password, salt FROM users WHERE username = ?")
-	if err != nil {
-		fmt.Println(err)
-		http.Error(w, "Database error", http.StatusInternalServerError)
-		return
-	}
-	defer stmt.Close()
-
-	var storedPassword string
-	var storedSalt []byte
-
-	// Use QueryRow to fetch both password and salt
-	err = stmt.QueryRow(data.Username).Scan(&storedPassword, &storedSalt)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			http.Error(w, "Invalid username or password", http.StatusUnauthorized)
-		} else {
-			fmt.Println(err)
-			http.Error(w, "Database error", http.StatusInternalServerError)
+		stmt, err := db.Prepare("SELECT password, salt FROM users WHERE username = ?")
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Internal server error"))
+			return
 		}
-		return
+		defer stmt.Close()
+		var hashedPassword string
+		var salt []byte
+		err = stmt.QueryRow(username).Scan(&hashedPassword, &salt)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Internal server error"))
+			return
+		}
+		passwordHash := hashPassword(password, salt)
+		if passwordHash != hashedPassword {
+			w.WriteHeader(http.StatusUnauthorized)
+			w.Write([]byte("Invalid username or password"))
+			return
+		}
+
+		session.Values["username"] = username
+		err = session.Save(r, w)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Internal server error"))
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("Logged in"))
+	} else {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 	}
-	enteredPassword := hashPassword(data.Password, storedSalt)
-	if storedPassword != enteredPassword {
-		http.Error(w, "Invalid username or password", http.StatusUnauthorized)
-		return
-	}
-	SessionManager.Put(r.Context(), "username", data.Username)
-	io.WriteString(w, "You have been logged in successfully!")
 }
-
-// func LoginHandler(w http.ResponseWriter, r *http.Request) {
-// 	enableCors(&w)
-// 	if r.Method == http.MethodOptions {
-// 		enableCors(&w)
-// 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-// 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-
-// 		w.WriteHeader(http.StatusOK)
-// 		return
-// 	}
-
-// 	w.Header().Set("Content-Type", "application/json")
-
-// 	body, err := io.ReadAll(r.Body)
-// 	if err != nil {
-// 		http.Error(w, "Error reading request body", http.StatusInternalServerError)
-// 		return
-// 	}
-// 	defer r.Body.Close()
-
-// 	var data signupData
-// 	err = json.Unmarshal(body, &data)
-// 	if err != nil {
-// 		response := map[string]string{"message": "Internal server error"}
-// 		jsonResponse, err := json.Marshal(response)
-// 		if err != nil {
-// 			http.Error(w, "Error creating JSON response", http.StatusInternalServerError)
-// 			return
-// 		}
-// 		w.WriteHeader(http.StatusInternalServerError)
-// 		w.Write(jsonResponse)
-// 		return
-// 	}
-
-// 	// Modify the SQL query to select both password and salt
-// 	stmt, err := db.Prepare("SELECT password, salt FROM users WHERE username = ?")
-// 	if err != nil {
-// 		response := map[string]string{"message": "Internal server error"}
-// 		jsonResponse, err := json.Marshal(response)
-// 		if err != nil {
-// 			http.Error(w, "Error creating JSON response", http.StatusInternalServerError)
-// 			return
-// 		}
-// 		w.WriteHeader(http.StatusInternalServerError)
-// 		w.Write(jsonResponse)
-// 		return
-// 	}
-// 	defer stmt.Close()
-
-// 	var storedPassword string
-// 	var storedSalt []byte
-
-// 	// Use QueryRow to fetch both password and salt
-// 	err = stmt.QueryRow(data.Username).Scan(&storedPassword, &storedSalt)
-// 	if err != nil {
-// 		if err == sql.ErrNoRows {
-// 			response := map[string]string{"message": "Invalid username or password"}
-// 			w.WriteHeader(http.StatusUnauthorized)
-// 			jsonResponse, err := json.Marshal(response)
-// 			if err != nil {
-// 				http.Error(w, "Error creating JSON response", http.StatusInternalServerError)
-// 				return
-// 			}
-// 			w.Write(jsonResponse)
-// 			return
-// 		} else {
-// 			response := map[string]string{"message": "Internal server error"}
-// 			jsonResponse, err := json.Marshal(response)
-// 			if err != nil {
-// 				http.Error(w, "Error creating JSON response", http.StatusInternalServerError)
-// 				return
-// 			}
-// 			w.Write(jsonResponse)
-// 			return
-// 		}
-// 	}
-// 	enteredPassword := hashPassword(data.Password, storedSalt)
-// 	if storedPassword != enteredPassword {
-// 		response := map[string]string{"message": "Invalid username or password"}
-// 		jsonResponse, err := json.Marshal(response)
-// 		w.WriteHeader(http.StatusUnauthorized)
-// 		if err != nil {
-// 			http.Error(w, "Error creating JSON response", http.StatusInternalServerError)
-// 			return
-// 		}
-// 		w.Write(jsonResponse)
-// 		return
-// 	}
-// 	SessionManager.Put(r.Context(), "username", data.Username)
-// 	response := map[string]string{"message": "Logged in successfully"}
-// 	jsonResponse, err := json.Marshal(response)
-// 	if err != nil {
-// 		http.Error(w, "Error creating JSON response", http.StatusInternalServerError)
-// 		return
-// 	}
-// 	w.Write(jsonResponse)
-// }

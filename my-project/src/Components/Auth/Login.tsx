@@ -9,22 +9,31 @@ export default function Login() {
             e.preventDefault();
             const username = e.target.username.value;
             const password = e.target.password.value;
-            const res = await axios.post("http://localhost:8080/login", {
-            username,
-            password,
-            });
-            setError(res.data.message);
-            navigate("/");
-        } catch (error) {
-            if (axios.isAxiosError(error)) {
-            if (error.response?.status === 401) {
-                setError("Invalid username or password");
-            } else {
-                setError("Internal server error");
-            }
-            } else {
-            setError("An unexpected error occurred");
-            }
+            const response = await axios.post(
+                "http://localhost:8080/login",
+                new URLSearchParams({
+                    username: username,
+                    password: password,
+                }).toString(),
+                {
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                    },
+                    withCredentials: true, // Ensure cookies (session) are sent
+                }
+            );
+            if (response.status === 200) {
+                navigate("/");
+            } 
+        } catch (error: any) {
+           if (axios.isAxiosError(error) && error.response?.status === 401) {
+               setError("Invalid username or password");
+           }
+           else{
+               setError("Internal server error")
+           }
+
+           
         }
     };
     useEffect(() => {
