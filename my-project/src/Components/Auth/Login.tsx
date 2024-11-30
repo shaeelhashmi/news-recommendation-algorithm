@@ -24,7 +24,7 @@ export default function Login() {
                 }
             );
             if (response.status === 200) {
-                navigate("/");
+                navigate("/news");
             } 
         } catch (error: any) {
            if (axios.isAxiosError(error) && error.response?.status === 401) {
@@ -41,7 +41,7 @@ export default function Login() {
       const checkLogin=async()=>{
         try{
           await axios.get(("http://localhost:8080/checklogin"),{withCredentials:true});
-          navigate("/");  
+          navigate("/news");  
         }catch(error:any){
           console.log(error.response.data)
         }
@@ -56,11 +56,11 @@ export default function Login() {
             <label htmlFor="username">Username:</label>
         <input type="text" name="username" id="username" placeholder="Username"  className="w-[90%]  my-4 h-10 rounded-sm p-2 mx-auto"
         onChange={(e) => {
-          if(e.target.value===" "){
+          if (e.target.value.includes(" ")) {
             return;
           }
           setUsername(e.target.value.toLowerCase());
-        }} value={username} />
+        }}value={username} />
         
         </div>
         <div className="flex flex-col">

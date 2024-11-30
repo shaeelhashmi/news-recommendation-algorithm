@@ -189,3 +189,61 @@ func LoginHandler(w http.ResponseWriter, r *http.Request, store *sessions.Cookie
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 	}
 }
+func ChangeUsernameHandler(w http.ResponseWriter, r *http.Request, store *sessions.CookieStore) {
+	w.Header().Set("Content-Type", "application/json")
+	enableCors(&w)
+	if r.Method == http.MethodPost {
+		session, err := store.Get(r, "user-session")
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Internal server error"))
+			return
+		}
+		username := session.Values["username"].(string)
+		newUsername := r.FormValue("newUsername")
+		fmt.Println(username, newUsername)
+		var exists bool
+		err = db.QueryRow("SELECT EXISTS(SELECT 1 FROM users WHERE username=?)", newUsername).Scan(&exists)
+		if err != nil {
+			fmt.Println(err, "1")
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Internal server error"))
+			return
+		}
+		if exists {
+			fmt.Println(err, "2")
+			w.WriteHeader(http.StatusConflict)
+			w.Write([]byte("Username already exists"))
+			return
+		}
+
+		stmt, err := db.Prepare("UPDATE users SET username = ? WHERE username = ?")
+		if err != nil {
+			fmt.Println(err, "3")
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Internal server error"))
+			return
+		}
+		defer stmt.Close()
+
+		_, err = stmt.Exec(newUsername, username)
+		if err != nil {
+			fmt.Println(err, "4")
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Internal server error"))
+			return
+		}
+
+		session.Values["username"] = newUsername
+		err = session.Save(r, w)
+		if err != nil {
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Internal server error"))
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("Username changed successfully"))
+
+	}
+}

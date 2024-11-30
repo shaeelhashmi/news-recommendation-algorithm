@@ -110,8 +110,10 @@ func main() {
 	mux.HandleFunc("/signup", func(w http.ResponseWriter, r *http.Request) {
 		auth.SignUphandler(w, r)
 	})
+	mux.HandleFunc("/changeusername", func(w http.ResponseWriter, r *http.Request) {
+		auth.ChangeUsernameHandler(w, r, store)
+	})
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-
 		http.Error(w, "404 page not found", http.StatusNotFound)
 	})
 	handler := corsHandler.Handler(mux)

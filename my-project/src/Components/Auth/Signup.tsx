@@ -56,7 +56,7 @@ export default function Signup() {
           <label htmlFor="username">Username:</label>
       <input type="text" name="username" id="username" placeholder="Username"  className="w-[90%]  my-4 h-10 rounded-sm p-2 mx-auto"
       onChange={(e) => {
-        if(e.target.value===" "){
+        if (e.target.value.includes(" ")) {
           return;
         }
         setUsername(e.target.value.toLowerCase());

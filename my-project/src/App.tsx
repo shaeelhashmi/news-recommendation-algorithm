@@ -6,6 +6,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import TopicNews from './Components/TopicNews'
 import Login from './Components/Auth/Login'
 import Signup from './Components/Auth/Signup'
+import Settings from './Components/Settings/Settings'
 function App() {
   const sortDescriptions:any = (arr: any[]) => {
     if (arr.length <= 1) return arr;
@@ -21,11 +22,12 @@ function App() {
   return (
     <Router>
     <Routes>
-    <Route path='/' element={<Headlines Sort={sortDescriptions}/>}></Route>
-    <Route path='/:topic/:subtopic' element={<News  Sort={sortDescriptions}></News>}></Route>
-    <Route path='/:topic' element={<TopicNews  Sort={sortDescriptions}/>}></Route>
+    <Route path='/news' element={<Headlines Sort={sortDescriptions}/>}></Route>
+    <Route path='/news/:topic/:subtopic' element={<News  Sort={sortDescriptions}></News>}></Route>
+    <Route path='/news/:topic' element={<TopicNews  Sort={sortDescriptions}/>}></Route>
     <Route path='/auth/login' element={<Login></Login>}></Route>
     <Route path='/auth/signup' element={<Signup></Signup>}></Route>
+    <Route path='/setting' element={<Settings></Settings>}></Route>
     </Routes>
     </Router>
   )
