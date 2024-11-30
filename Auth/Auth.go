@@ -16,35 +16,32 @@ import (
 
 var db *sql.DB
 
-// type signupData struct {
-// 	Username string `json:"username"`
-// 	Password string `json:"password"`
-// 	Salt     []byte
-// }
-
-func CheckSessionExists(w http.ResponseWriter, r *http.Request) {
+func CheckSessionExists(w http.ResponseWriter, r *http.Request, store *sessions.CookieStore) {
 	enableCors(&w)
 	w.Header().Set("Content-Type", "application/json")
 	session, err := store.Get(r, "user-session")
 	if err != nil {
-		http.Error(w, "Unable to get session", http.StatusInternalServerError)
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write([]byte("Session not found"))
 		return
 	}
-	if session.Values["userName"] == nil {
-		http.Error(w, "No session found", http.StatusUnauthorized)
+	if session.Values["username"] == nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write([]byte("Session not found"))
 		return
 	}
 
-	w.Write([]byte("Session found"))
+	w.Write([]byte(session.Values["username"].(string)))
 }
+
 func enableCors(w *http.ResponseWriter) {
 	(*w).Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
 	(*w).Header().Set("Access-Control-Allow-Credentials", "true")
 }
+
 func ConnectDB() {
 	err1 := godotenv.Load()
 	if err1 != nil {
-
 		log.Fatal("Error loading .env file")
 	}
 	cfg := mysql.Config{
@@ -67,31 +64,19 @@ func ConnectDB() {
 	}
 
 	fmt.Println("Connected!")
-
 }
-
-var (
-	store = sessions.NewCookieStore([]byte("secret-key"))
-)
 
 func hashPassword(password string, salt []byte) string {
-
 	var passwordBytes = []byte(password)
-
 	var sha512Hasher = sha512.New()
-
 	passwordBytes = append(passwordBytes, salt...)
-
 	sha512Hasher.Write(passwordBytes)
-
 	var hashedPasswordBytes = sha512Hasher.Sum(nil)
-
 	var hashedPasswordHex = hex.EncodeToString(hashedPasswordBytes)
-
 	return hashedPasswordHex
-
 }
-func LoginHandler(w http.ResponseWriter, r *http.Request) {
+
+func LoginHandler(w http.ResponseWriter, r *http.Request, store *sessions.CookieStore) {
 	w.Header().Set("Content-Type", "application/json")
 	if r.Method == http.MethodPost {
 		username := r.FormValue("username")
@@ -125,6 +110,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		session.Values["username"] = username
+		store.Save(r, w, session)
 		err = session.Save(r, w)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)

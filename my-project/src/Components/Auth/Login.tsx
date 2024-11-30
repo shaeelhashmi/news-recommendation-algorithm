@@ -39,11 +39,10 @@ export default function Login() {
     useEffect(() => {
       const checkLogin=async()=>{
         try{
-          const res=await axios.get("http://localhost:8080/check/session/exists");
-          console.log(res.data)
-          
-        }catch(error){
-          console.log(error)
+          await axios.get(("http://localhost:8080/checklogin"),{withCredentials:true});
+          navigate("/");  
+        }catch(error:any){
+          console.log(error.response.data)
         }
       }
       checkLogin();

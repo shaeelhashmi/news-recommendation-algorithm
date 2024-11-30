@@ -9,6 +9,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/gorilla/sessions"
 	"github.com/rs/cors"
 )
 
@@ -26,8 +27,16 @@ type LinksResponse struct {
 	Links []DataStructures.LinksResponse `json:"Links"`
 }
 
-func main() {
+var (
+	store = sessions.NewCookieStore([]byte("secret-key"))
+)
 
+func main() {
+	store.Options = &sessions.Options{
+		Path:     "/",
+		MaxAge:   3600,
+		HttpOnly: true,
+	}
 	corsHandler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:5173"}, // React default port
 		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
@@ -89,9 +98,14 @@ func main() {
 		jsonResponse := JsonResponse{Headlines: news}
 		json.NewEncoder(w).Encode(jsonResponse)
 	})
-	mux.HandleFunc("/login", auth.LoginHandler)
-
+	mux.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
+		auth.LoginHandler(w, r, store)
+	})
+	mux.HandleFunc("/checklogin", func(w http.ResponseWriter, r *http.Request) {
+		auth.CheckSessionExists(w, r, store)
+	})
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+
 		http.Error(w, "404 page not found", http.StatusNotFound)
 	})
 	handler := corsHandler.Handler(mux)
