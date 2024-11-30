@@ -189,6 +189,61 @@ func LoginHandler(w http.ResponseWriter, r *http.Request, store *sessions.Cookie
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 	}
 }
+func ChangePasswordHandler(w http.ResponseWriter, r *http.Request, store *sessions.CookieStore) {
+	w.Header().Set("Content-Type", "application/json")
+	enableCors(&w)
+	if r.Method == http.MethodPost {
+		session, err := store.Get(r, "user-session")
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Internal server error"))
+			return
+		}
+		username := session.Values["username"].(string)
+		oldPassword := r.FormValue("oldPassword")
+		newPassword := r.FormValue("newPassword")
+		stmt, err := db.Prepare("SELECT password, salt FROM users WHERE username = ?")
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Internal server error"))
+			return
+		}
+		defer stmt.Close()
+		var hashedPassword string
+		var salt []byte
+		err = stmt.QueryRow(username).Scan(&hashedPassword, &salt)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Internal server error"))
+			return
+		}
+		passwordHash := hashPassword(oldPassword, salt)
+		if passwordHash != hashedPassword {
+			w.WriteHeader(http.StatusUnauthorized)
+			w.Write([]byte("Invalid password"))
+			return
+		}
+		newSalt := generateRandomSalt(16)
+		newHashedPassword := hashPassword(newPassword, newSalt)
+		stmt, err = db.Prepare("UPDATE users SET password = ?, salt = ? WHERE username = ?")
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Internal server error"))
+			return
+		}
+		defer stmt.Close()
+		_, err = stmt.Exec(newHashedPassword, newSalt, username)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Internal server error"))
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("Password changed successfully"))
+		return
+	}
+	http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+}
 func ChangeUsernameHandler(w http.ResponseWriter, r *http.Request, store *sessions.CookieStore) {
 	w.Header().Set("Content-Type", "application/json")
 	enableCors(&w)
@@ -246,4 +301,6 @@ func ChangeUsernameHandler(w http.ResponseWriter, r *http.Request, store *sessio
 		w.Write([]byte("Username changed successfully"))
 
 	}
+	w.WriteHeader(http.StatusMethodNotAllowed)
+	w.Write([]byte("Invalid request method"))
 }

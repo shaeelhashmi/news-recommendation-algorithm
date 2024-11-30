@@ -68,7 +68,8 @@ export default function Login() {
         <input type="password" name="password" id="password" placeholder="Password"  className="w-[90%] my-4 h-10 rounded-sm p-2 mx-auto"/>
         </div>
         <div className="w-full h-10 text-red-500">{error}</div>
-        <div className="flex items-center justify-center ">
+        <a href="/auth/signup" className="h-10 my-3 mb-10 ">Dont have an account? <span className="text-blue-600">Signup</span></a>
+        <div className="flex items-center justify-center my-3">
   <button
     type="submit"
     className="w-[200px] h-10 text-center bg-blue-600 text-white rounded-lg"

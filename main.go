@@ -113,6 +113,9 @@ func main() {
 	mux.HandleFunc("/changeusername", func(w http.ResponseWriter, r *http.Request) {
 		auth.ChangeUsernameHandler(w, r, store)
 	})
+	mux.HandleFunc("/changepassword", func(w http.ResponseWriter, r *http.Request) {
+		auth.ChangePasswordHandler(w, r, store)
+	})
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "404 page not found", http.StatusNotFound)
 	})
