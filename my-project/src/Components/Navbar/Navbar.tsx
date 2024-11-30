@@ -1,5 +1,6 @@
 import SideBar from "./SideBar"
 import {useDispatch} from 'react-redux'
+import axios from "axios"
 export default function Navbar() {
   const dispatch = useDispatch()
   return (
@@ -14,6 +15,14 @@ export default function Navbar() {
     }} />
     <span className="ml-5">Sort A-Z</span>
   </label>
+  <button className="bg-blue-700 w-[150px] h-[30px]  hover:bg-blue-800 mx-5 transition-all duration-500 rounded-sm" onClick={async()=>{
+   try{
+     await axios.get('http://localhost:8080/logout',{withCredentials:true});
+    location.reload()
+   }catch(e){
+    console.log(e)
+   }
+  }}>Logout</button>
   </div>
      </div>
      </nav>

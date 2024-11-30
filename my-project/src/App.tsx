@@ -5,7 +5,7 @@ import News from './Components/News'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import TopicNews from './Components/TopicNews'
 import Login from './Components/Auth/Login'
-
+import Signup from './Components/Auth/Signup'
 function App() {
   const sortDescriptions:any = (arr: any[]) => {
     if (arr.length <= 1) return arr;
@@ -25,6 +25,7 @@ function App() {
     <Route path='/:topic/:subtopic' element={<News  Sort={sortDescriptions}></News>}></Route>
     <Route path='/:topic' element={<TopicNews  Sort={sortDescriptions}/>}></Route>
     <Route path='/auth/login' element={<Login></Login>}></Route>
+    <Route path='/auth/signup' element={<Signup></Signup>}></Route>
     </Routes>
     </Router>
   )

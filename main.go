@@ -104,6 +104,12 @@ func main() {
 	mux.HandleFunc("/checklogin", func(w http.ResponseWriter, r *http.Request) {
 		auth.CheckSessionExists(w, r, store)
 	})
+	mux.HandleFunc("/logout", func(w http.ResponseWriter, r *http.Request) {
+		auth.LogoutHandler(w, r, store)
+	})
+	mux.HandleFunc("/signup", func(w http.ResponseWriter, r *http.Request) {
+		auth.SignUphandler(w, r)
+	})
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 
 		http.Error(w, "404 page not found", http.StatusNotFound)

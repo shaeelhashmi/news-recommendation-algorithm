@@ -6,7 +6,9 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import InfiniteScrollLoader from './Loader/InfiniteScrollLoader';
 import { useSelector } from 'react-redux';
 import Navbar from './Navbar/Navbar';
+import { useNavigate } from 'react-router-dom';
 export default function Headlines(props:any) {
+  const navigate = useNavigate();
   const selector = useSelector((state: any) => state.SortState.sort);
   const [posts, setPosts] = useState<any[]>([]);
   const [loader, setLoader] = useState<boolean>(true);
@@ -15,7 +17,7 @@ export default function Headlines(props:any) {
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [sortData, setSortData] = useState<any[]>([]);
   useEffect(() => {
-
+    
       window.scrollTo({ top: 0, behavior: 'smooth' });
  
     if(!selector){
@@ -33,6 +35,16 @@ export default function Headlines(props:any) {
     setData(newData); 
   }, [selector]);
   useEffect(() => {
+    const checkLogin=async()=>{
+      try{
+        await axios.get(("http://localhost:8080/checklogin"),{withCredentials:true});
+      }catch(error:any){
+        if(error.response.status===401){
+          navigate("/auth/login");
+      }
+    }
+  }
+    checkLogin();
     
     const fetchData = async () =>{
       const result = await axios.get('http://localhost:8080/news/');

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 export default function Login() {
     const navigate = useNavigate();
     const [error, setError] = useState("");
+    const [username, setUsername] = useState("");
     const handleSubmit = async (e: any) => {
         try {
             e.preventDefault();
@@ -46,14 +47,21 @@ export default function Login() {
         }
       }
       checkLogin();
-    })
+    },[])
   return (
     <div className="flex items-center justify-center h-screen m-0">
       <form action="" className="p-3 h-[400px] w-[350px] bg-slate-200 text-md" onSubmit={handleSubmit}>
         <h1 className="mb-4 text-4xl font-bold text-center">Login</h1>
         <div className="flex flex-col ">
             <label htmlFor="username">Username:</label>
-        <input type="text" name="username" id="username" placeholder="Username"  className="w-[90%]  my-4 h-10 rounded-sm p-2 mx-auto"/>
+        <input type="text" name="username" id="username" placeholder="Username"  className="w-[90%]  my-4 h-10 rounded-sm p-2 mx-auto"
+        onChange={(e) => {
+          if(e.target.value===" "){
+            return;
+          }
+          setUsername(e.target.value.toLowerCase());
+        }} value={username} />
+        
         </div>
         <div className="flex flex-col">
         <label htmlFor="password">Password:</label>
