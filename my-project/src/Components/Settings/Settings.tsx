@@ -8,7 +8,7 @@ export default function Settings() {
     const[error,setError]=useState("");
     const handleSubmit=async(e:any)=>{
         try{
-          if(e.target.username.value.trim().length===0 ){
+          if(username.length===0 ){
             setError("Username  cannot be empty");
             return;
         }
@@ -25,12 +25,16 @@ export default function Settings() {
                 setError  ("username changed to "+username);
             }
         }catch(error:any){
+          console.error(error.response?.data);
+          console.log(error);
             if(axios.isAxiosError(error) && error.response?.status===409){
                 setError("Username already exists");
             }
             else{
+              console.log(error);
                 setError("Internal server error");
             }
+            return;
         }
     }
     const handlePasswordChange=async(e:any)=>{
@@ -76,7 +80,7 @@ export default function Settings() {
       <div>
         <h1 className="mx-auto mt-32 text-4xl font-bold text-center ">Settings</h1>
         <div className="mx-auto w-96">
-            <form action="" onSubmit={handlePasswordChange}>
+            <form  onSubmit={handlePasswordChange}>
                 <h1 className="mx-auto mt-10 text-2xl font-bold text-center">Change password</h1>
                 <label htmlFor="oldpassword" className="block my-4">Old password:</label>
                 <input type="password" name="oldpassword" id="oldpassword" className="sm:w-full w-[90%] p-2 border-2 border-solid" />
@@ -87,7 +91,7 @@ export default function Settings() {
              <button className="w-[100px] p-1 text-white bg-blue-600 rounded hover:bg-blue-700 duration-500 transition-all" type="submit">Change</button>
              </div>
             </form>
-            <form action="" onSubmit={handleSubmit}>
+            <form  onSubmit={handleSubmit}>
                 <h1 className="mx-auto mt-10 text-2xl font-bold text-center">Change username</h1>
                 <label htmlFor="newusername" className="block my-4">New username:</label>
                 <input type="text" name="newUsername" id="newusername" className="sm:w-full w-[90%] p-2 border-2 border-solid" value={username} onChange={(e) => {

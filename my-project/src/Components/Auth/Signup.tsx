@@ -78,7 +78,7 @@ export default function Signup() {
   type="submit"
   className="w-[200px] h-10 text-center bg-blue-600 text-white rounded-lg"
 >
-  Login
+  SignUp
 </button>
 </div>
     </form>
