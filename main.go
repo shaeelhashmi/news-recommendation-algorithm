@@ -5,6 +5,7 @@ import (
 	"net/http"
 	auth "scraper/Auth"
 	"scraper/DataStructures"
+	interest "scraper/Interest"
 	headlines "scraper/News/CNN/Headlines"
 	"sync"
 	"time"
@@ -116,9 +117,10 @@ func main() {
 	mux.HandleFunc("/changepassword", func(w http.ResponseWriter, r *http.Request) {
 		auth.ChangePasswordHandler(w, r, store)
 	})
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.Error(w, "404 page not found", http.StatusNotFound)
+	mux.HandleFunc("/interest", func(w http.ResponseWriter, r *http.Request) {
+		interest.InterestManage(w, r, store)
 	})
+
 	handler := corsHandler.Handler(mux)
 	http.ListenAndServe(":8080", handler)
 

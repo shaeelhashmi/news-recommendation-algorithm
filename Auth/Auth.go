@@ -15,27 +15,36 @@ import (
 	"github.com/joho/godotenv"
 )
 
-var db *sql.DB
+var Db *sql.DB
 
-func CheckSessionExists(w http.ResponseWriter, r *http.Request, store *sessions.CookieStore) {
-	enableCors(&w)
+func CheckSessionExists(w http.ResponseWriter, r *http.Request, store *sessions.CookieStore) bool {
+	EnableCors(&w)
 	w.Header().Set("Content-Type", "application/json")
 	session, err := store.Get(r, "user-session")
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
 		w.Write([]byte("Session not found"))
-		return
+		return false
 	}
 	if session.Values["username"] == nil {
 		w.WriteHeader(http.StatusUnauthorized)
 		w.Write([]byte("Session not found"))
-		return
+		return false
+	}
+	username := session.Values["username"].(string)
+	var exists bool
+	err = Db.QueryRow("SELECT EXISTS(SELECT 1 FROM users WHERE username=?)", username).Scan(&exists)
+	if err != nil || !exists {
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write([]byte("Session not found"))
+		return false
 	}
 
 	w.Write([]byte(session.Values["username"].(string)))
+	return true
 }
 func LogoutHandler(w http.ResponseWriter, r *http.Request, store *sessions.CookieStore) {
-	enableCors(&w)
+	EnableCors(&w)
 	w.Header().Set("Content-Type", "application/json")
 	fmt.Println("Logging out")
 	session, err := store.Get(r, "user-session")
@@ -52,12 +61,12 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request, store *sessions.Cooki
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Logged out"))
 }
-func enableCors(w *http.ResponseWriter) {
+func EnableCors(w *http.ResponseWriter) {
 	(*w).Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
 	(*w).Header().Set("Access-Control-Allow-Credentials", "true")
 }
 
-func ConnectDB() {
+func ConnectDB() *sql.DB {
 	err1 := godotenv.Load()
 	if err1 != nil {
 		log.Fatal("Error loading .env file")
@@ -71,16 +80,16 @@ func ConnectDB() {
 	}
 	// Get a database handle.
 	var err error
-	db, err = sql.Open("mysql", cfg.FormatDSN())
+	Db, err = sql.Open("mysql", cfg.FormatDSN())
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	pingErr := db.Ping()
+	pingErr := Db.Ping()
 	if pingErr != nil {
 		log.Fatal(pingErr)
 	}
-
+	return Db
 }
 
 func hashPassword(password string, salt []byte) string {
@@ -103,22 +112,36 @@ func generateRandomSalt(saltSize int) []byte {
 }
 func SignUphandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	enableCors(&w)
+	EnableCors(&w)
 	if r.Method == http.MethodPost {
 		username := r.FormValue("username")
 		password := r.FormValue("password")
 		salt := generateRandomSalt(16)
 		hashedPassword := hashPassword(password, salt)
-		stmt, err := db.Prepare("INSERT INTO users (username, password, salt) VALUES (?, ?, ?)")
+		tx, err := Db.Begin()
 		if err != nil {
+			fmt.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("Internal server error"))
 			return
 		}
-		defer stmt.Close()
 		var exists bool
-		err = db.QueryRow("SELECT EXISTS(SELECT 1 FROM users WHERE username=?)", username).Scan(&exists)
+		_, err = tx.Exec(`
+		CREATE TABLE IF NOT EXISTS users (
+username VARCHAR(255) NOT NULL PRIMARY KEY,
+password VARCHAR(255) NOT NULL,
+salt BLOB NOT NULL
+);`)
 		if err != nil {
+			tx.Rollback()
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Internal server error"))
+			return
+		}
+		err = Db.QueryRow("SELECT EXISTS(SELECT 1 FROM users WHERE username=?)", username).Scan(&exists)
+		if err != nil {
+			fmt.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("Internal server error"))
 			return
@@ -129,14 +152,92 @@ func SignUphandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		_, err = stmt.Exec(username, hashedPassword, salt)
+		tables := []string{
+			`CREATE TABLE IF NOT EXISTS science (
+				userName VARCHAR(255) NOT NULL PRIMARY KEY,
+				visit INT DEFAULT 0,
+				FOREIGN KEY (userName) REFERENCES users(username)
+				ON UPDATE CASCADE
+			);`,
+			`CREATE TABLE IF NOT EXISTS business (
+				userName VARCHAR(255) NOT NULL PRIMARY KEY,
+				visit INT DEFAULT 0,
+				FOREIGN KEY (userName) REFERENCES users(username)
+				ON UPDATE CASCADE
+			);`,
+			`CREATE TABLE IF NOT EXISTS health (
+				userName VARCHAR(255) NOT NULL PRIMARY KEY,
+				visit INT DEFAULT 0,
+				FOREIGN KEY (userName) REFERENCES users(username)
+				ON UPDATE CASCADE
+			);`,
+			`CREATE TABLE IF NOT EXISTS sports (
+				userName VARCHAR(255) NOT NULL PRIMARY KEY,
+				visit INT DEFAULT 0,
+				FOREIGN KEY (userName) REFERENCES users(username)
+				ON UPDATE CASCADE
+			);`,
+			`CREATE TABLE IF NOT EXISTS entertainment (
+				userName VARCHAR(255) NOT NULL PRIMARY KEY,
+				visit INT DEFAULT 0,
+				FOREIGN KEY (userName) REFERENCES users(username)
+				ON UPDATE CASCADE
+			);`,
+			`CREATE TABLE IF NOT EXISTS world (
+				userName VARCHAR(255) NOT NULL PRIMARY KEY,
+				visit INT DEFAULT 0,
+				FOREIGN KEY (userName) REFERENCES users(username)
+				ON UPDATE CASCADE
+			);`,
+		}
+
+		for _, table := range tables {
+			_, err = tx.Exec(table)
+			if err != nil {
+				tx.Rollback()
+				fmt.Println(err)
+				w.WriteHeader(http.StatusInternalServerError)
+				w.Write([]byte("Internal server error"))
+				return
+			}
+		}
+
+		_, err = tx.Exec("INSERT INTO users (username, password, salt) VALUES (?, ?, ?)", username, hashedPassword, salt)
 		if err != nil {
+			tx.Rollback()
+			fmt.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("Internal server error"))
 			return
 		}
+		InsertionTable := []string{
+			"INSERT INTO health (userName, visit) VALUES (?, ?)",
+			"INSERT INTO sports (userName, visit) VALUES (?, ?)",
+			"INSERT INTO entertainment (userName, visit) VALUES (?, ?)",
+			"INSERT INTO world (userName, visit) VALUES (?, ?)",
+			"INSERT INTO science (userName, visit) VALUES (?, ?)",
+			"INSERT INTO business (userName, visit) VALUES (?, ?)",
+		}
+		for _, table := range InsertionTable {
+			_, err = tx.Exec(table, username, 0)
+			if err != nil {
+				tx.Rollback()
+				fmt.Println(err)
+				w.WriteHeader(http.StatusInternalServerError)
+				w.Write([]byte("Internal server error"))
+				return
+			}
+		}
+		err = tx.Commit()
+		if err != nil {
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Internal server error"))
+			return
+		}
+
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("User created"))
+		w.Write([]byte("User created successfully"))
 		return
 	}
 	http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
@@ -152,7 +253,19 @@ func LoginHandler(w http.ResponseWriter, r *http.Request, store *sessions.Cookie
 			w.Write([]byte("Internal server error"))
 			return
 		}
-		stmt, err := db.Prepare("SELECT password, salt FROM users WHERE username = ?")
+		var exists bool
+		err = Db.QueryRow("SELECT EXISTS(SELECT 1 FROM users WHERE username=?)", username).Scan(&exists)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Internal server error"))
+			return
+		}
+		if !exists {
+			w.WriteHeader(http.StatusUnauthorized)
+			w.Write([]byte("Invalid username or password"))
+			return
+		}
+		stmt, err := Db.Prepare("SELECT password, salt FROM users WHERE username = ?")
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("Internal server error"))
@@ -191,7 +304,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request, store *sessions.Cookie
 }
 func ChangePasswordHandler(w http.ResponseWriter, r *http.Request, store *sessions.CookieStore) {
 	w.Header().Set("Content-Type", "application/json")
-	enableCors(&w)
+	EnableCors(&w)
 	if r.Method == http.MethodPost {
 		session, err := store.Get(r, "user-session")
 		if err != nil {
@@ -202,7 +315,7 @@ func ChangePasswordHandler(w http.ResponseWriter, r *http.Request, store *sessio
 		username := session.Values["username"].(string)
 		oldPassword := r.FormValue("oldPassword")
 		newPassword := r.FormValue("newPassword")
-		stmt, err := db.Prepare("SELECT password, salt FROM users WHERE username = ?")
+		stmt, err := Db.Prepare("SELECT password, salt FROM users WHERE username = ?")
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("Internal server error"))
@@ -225,7 +338,7 @@ func ChangePasswordHandler(w http.ResponseWriter, r *http.Request, store *sessio
 		}
 		newSalt := generateRandomSalt(16)
 		newHashedPassword := hashPassword(newPassword, newSalt)
-		stmt, err = db.Prepare("UPDATE users SET password = ?, salt = ? WHERE username = ?")
+		stmt, err = Db.Prepare("UPDATE users SET password = ?, salt = ? WHERE username = ?")
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("Internal server error"))
@@ -246,7 +359,7 @@ func ChangePasswordHandler(w http.ResponseWriter, r *http.Request, store *sessio
 }
 func ChangeUsernameHandler(w http.ResponseWriter, r *http.Request, store *sessions.CookieStore) {
 	w.Header().Set("Content-Type", "application/json")
-	enableCors(&w)
+	EnableCors(&w)
 	if r.Method == http.MethodPost {
 		session, err := store.Get(r, "user-session")
 		if err != nil {
@@ -258,7 +371,7 @@ func ChangeUsernameHandler(w http.ResponseWriter, r *http.Request, store *sessio
 		newUsername := r.FormValue("newUsername")
 		fmt.Println(username, newUsername)
 		var exists bool
-		err = db.QueryRow("SELECT EXISTS(SELECT 1 FROM users WHERE username=?)", newUsername).Scan(&exists)
+		err = Db.QueryRow("SELECT EXISTS(SELECT 1 FROM users WHERE username=?)", newUsername).Scan(&exists)
 		if err != nil {
 			fmt.Println(err, "1")
 			w.WriteHeader(http.StatusInternalServerError)
@@ -271,8 +384,15 @@ func ChangeUsernameHandler(w http.ResponseWriter, r *http.Request, store *sessio
 			w.Write([]byte("Username already exists"))
 			return
 		}
+		_, err = Db.Exec("SET sql_mode = ''")
+		if err != nil {
+			fmt.Println(err, "setting sql_mode")
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Internal server error"))
+			return
+		}
+		stmt, err := Db.Prepare("UPDATE users SET username = ? WHERE username = ?")
 
-		stmt, err := db.Prepare("UPDATE users SET username = ? WHERE username = ?")
 		if err != nil {
 			fmt.Println(err, "3")
 			w.WriteHeader(http.StatusInternalServerError)
@@ -280,7 +400,6 @@ func ChangeUsernameHandler(w http.ResponseWriter, r *http.Request, store *sessio
 			return
 		}
 		defer stmt.Close()
-
 		_, err = stmt.Exec(newUsername, username)
 		if err != nil {
 			fmt.Println(err, "4")
