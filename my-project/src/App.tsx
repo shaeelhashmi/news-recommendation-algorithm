@@ -5,6 +5,7 @@ import TopicNews from './Components/TopicNews'
 import Login from './Components/Auth/Login'
 import Signup from './Components/Auth/Signup'
 import Settings from './Components/Settings/Settings'
+import HomePage from './Components/HomePage'
 function App() {
   const sortDescriptions:any = (arr: any[]) => {
     if (arr.length <= 1) return arr;
@@ -20,10 +21,12 @@ function App() {
   return (
     <Router>
     <Routes>
+    <Route path='/' element={<HomePage  Sort={sortDescriptions}/>}></Route>
     <Route path='/:topic' element={<TopicNews  Sort={sortDescriptions}/>}></Route>
     <Route path='/auth/login' element={<Login></Login>}></Route>
     <Route path='/auth/signup' element={<Signup></Signup>}></Route>
     <Route path='/setting' element={<Settings></Settings>}></Route>
+
     </Routes>
     </Router>
   )

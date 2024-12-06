@@ -5,6 +5,7 @@ import (
 	"net/http"
 	auth "scraper/Auth"
 	"scraper/DataStructures"
+	fyp "scraper/Fyp"
 	interest "scraper/Interest"
 	headlines "scraper/News/CNN/Headlines"
 	"sync"
@@ -23,9 +24,6 @@ var cache = &sync.Map{}
 
 type JsonResponse struct {
 	Headlines []DataStructures.Response `json:"News"`
-}
-type LinksResponse struct {
-	Links []DataStructures.LinksResponse `json:"Links"`
 }
 
 var (
@@ -103,7 +101,14 @@ func main() {
 	mux.HandleFunc("/interest", func(w http.ResponseWriter, r *http.Request) {
 		interest.InterestManage(w, r, store)
 	})
-
+	mux.HandleFunc("/fyp", func(w http.ResponseWriter, r *http.Request) {
+		world := headlines.ImportHeadlines("world", "div.card")
+		business := headlines.ImportHeadlines("business", "div.card")
+		entertainment := headlines.ImportHeadlines("entertainment", "div.card")
+		science := headlines.ImportHeadlines("science", "div.card")
+		sports := headlines.ImportHeadlines("sports", "div.card")
+		fyp.Fyp(w, r, world, business, entertainment, science, sports, store)
+	})
 	handler := corsHandler.Handler(mux)
 	http.ListenAndServe(":8080", handler)
 
