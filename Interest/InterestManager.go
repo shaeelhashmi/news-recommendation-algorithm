@@ -2,7 +2,6 @@ package interest
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	auth "scraper/Auth"
@@ -35,39 +34,30 @@ func InterestManage(w http.ResponseWriter, r *http.Request, store *sessions.Cook
 		PostType := requestData.PostType
 		sessions, err := store.Get(r, "user-session")
 		if err != nil {
-			fmt.Println(err, '1')
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		fmt.Print(PostType)
 		if !auth.CheckSessionExists(w, r, store) {
-			fmt.Println("Unauthorized")
-			w.WriteHeader(http.StatusUnauthorized)
-			w.Write([]byte("Unauthorized"))
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
 		username := sessions.Values["username"]
 		stmt, err := db.Prepare("UPDATE " + PostType + " SET visit=visit+1, latestVisit=? WHERE username=?")
 
 		if err != nil {
-			fmt.Println(err, '2')
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		_, err = stmt.Exec(time.Now(), username)
 		if err != nil {
-			fmt.Println(err, '2')
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		fmt.Println(time.Now())
 		_, err = stmt.Exec(username)
 		if err != nil {
-			fmt.Println(err, '3')
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("Success"))
 		return
 	}
