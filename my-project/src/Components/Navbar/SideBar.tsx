@@ -15,7 +15,7 @@ export default function SideBar() {
         },
         {
           "URL": "/entertainment",
-          "Text": "entertainment",
+          "Text": "Entertainment",
         },
         {
           "URL": "/business",
@@ -33,6 +33,10 @@ export default function SideBar() {
           "URL":"/science",
           "Text":"Science"
         },
+        {
+          "URL":"/setting",
+          "Text":"Setting"
+        }
         
       ]
     

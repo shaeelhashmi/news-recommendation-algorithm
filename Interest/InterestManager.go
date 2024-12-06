@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	auth "scraper/Auth"
+	"time"
 
 	"github.com/gorilla/sessions"
 )
@@ -46,12 +47,20 @@ func InterestManage(w http.ResponseWriter, r *http.Request, store *sessions.Cook
 			return
 		}
 		username := sessions.Values["username"]
-		stmt, err := db.Prepare("INSERT INTO " + PostType + " (username, visit) VALUES (?, 1) ON DUPLICATE KEY UPDATE visit = visit + 1")
+		stmt, err := db.Prepare("UPDATE " + PostType + " SET visit=visit+1, latestVisit=? WHERE username=?")
+
 		if err != nil {
 			fmt.Println(err, '2')
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+		_, err = stmt.Exec(time.Now(), username)
+		if err != nil {
+			fmt.Println(err, '2')
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		fmt.Println(time.Now())
 		_, err = stmt.Exec(username)
 		if err != nil {
 			fmt.Println(err, '3')
@@ -60,6 +69,7 @@ func InterestManage(w http.ResponseWriter, r *http.Request, store *sessions.Cook
 		}
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("Success"))
+		return
 	}
 	w.WriteHeader(http.StatusMethodNotAllowed)
 	w.Write([]byte("Method Not Allowed"))

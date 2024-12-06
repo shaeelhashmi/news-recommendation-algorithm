@@ -46,23 +46,6 @@ func main() {
 	})
 	auth.ConnectDB()
 	mux := http.NewServeMux()
-	mux.HandleFunc("/links", func(w http.ResponseWriter, r *http.Request) {
-		Links := headlines.ImportLinks("nav li.subnav__section")
-		enableCors(&w)
-		w.Header().Set("Content-Type", "application/json")
-		w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-		w.Header().Set("Cache-Control", "public, max-age=1800")
-		if r.Method == "OPTIONS" {
-			return
-		}
-		if data, ok := cache.Load("links"); ok {
-			json.NewEncoder(w).Encode(LinksResponse{Links: data.([]DataStructures.LinksResponse)})
-			return
-		}
-		cache.Store("links", Links)
-		json.NewEncoder(w).Encode(LinksResponse{Links: Links})
-	})
 	mux.HandleFunc("/news/", func(w http.ResponseWriter, r *http.Request) {
 		q := r.URL.Query().Get("topic")
 		q2 := r.URL.Query().Get("subtopic")

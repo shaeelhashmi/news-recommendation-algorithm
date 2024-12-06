@@ -12,6 +12,3 @@ func ImportHeadlines(a string, ele string) []DataStructures.Response {
 	responses := Scraper.ImportHeadlines(ele, query)
 	return DataStructures.GetResponse(responses)
 }
-func ImportLinks(a string) []DataStructures.LinksResponse {
-	return Scraper.ImportLinks(a)
-}
