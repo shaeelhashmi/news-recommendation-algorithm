@@ -2,23 +2,41 @@ import NavLinks from "./NavLinks"
 import MenuBtn from "../SVG/MenuBtn"
 import { useState } from "react"
 import { useEffect } from "react"
-import axios from "axios"
 export default function SideBar() {
   const [show, setShow] = useState(false)
   const [links, setLinks] = useState<any[]>([])
  
   useEffect(() => {
-    const fetchData = async () => { 
-      try {
-        const response = await axios.get('http://localhost:8080/links')
-        setLinks(response.data.Links)
-         
-    } catch (error) {
-        console.error(error)
-    }
-  }
-  fetchData()
-  console.log(links)
+    let data=
+      [
+        {
+          "URL": "/world",
+          "Text": "World",
+        },
+        {
+          "URL": "/entertainment",
+          "Text": "entertainment",
+        },
+        {
+          "URL": "/business",
+          "Text": "Business",
+        },
+        {
+          "URL": "/sports",
+          "Text": "Sports",
+        },
+        {
+          "URL":"/health",
+          "Text":"Health"
+        },
+        {
+          "URL":"/science",
+          "Text":"Science"
+        },
+        
+      ]
+    
+    setLinks(data)
 
   },[])
  
@@ -32,8 +50,7 @@ export default function SideBar() {
     <aside className={`fixed xl:top-14 sm:top-24 top-20 left-0 xl:w-[250px] xl:h-screen bg-[#2a17a4]  flex flex-col text-white overflow-auto pl-8 sidebar w-full ${show?'h-72':'h-0'} duration-500 transition-all overflow-x-hidden`}>  
       <div>
       {links.map((link, index) => {
-        console.log(link.SubLinks)
-        return <NavLinks key={index} link={link.Links.URL} text={link.Links.Text} subLinks={link.SubLinks} ></NavLinks>
+        return <NavLinks key={index} link={link.URL} text={link.Text}  ></NavLinks>
       })}
       </div>
     </aside>
