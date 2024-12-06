@@ -88,7 +88,7 @@ export default function News(props:any) {
       >
       {data.map((post,index) => (
        <div key={index}>
-       <NewsCard image={post.Img} link={"/news/"+post.Links}description={post.Description}/>
+       <NewsCard image={post.Img} link={post.Links}description={post.Description} type={topic}/>
        </div>
       ))}
       </InfiniteScroll>

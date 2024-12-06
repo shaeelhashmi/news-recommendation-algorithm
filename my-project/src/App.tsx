@@ -22,9 +22,9 @@ function App() {
   return (
     <Router>
     <Routes>
-    <Route path='/news' element={<Headlines Sort={sortDescriptions}/>}></Route>
-    <Route path='/news/:topic/:subtopic' element={<News  Sort={sortDescriptions}></News>}></Route>
-    <Route path='/news/:topic' element={<TopicNews  Sort={sortDescriptions}/>}></Route>
+    <Route path='/' element={<Headlines Sort={sortDescriptions}/>}></Route>
+    <Route path='/:topic/:subtopic' element={<News  Sort={sortDescriptions}></News>}></Route>
+    <Route path='/:topic' element={<TopicNews  Sort={sortDescriptions}/>}></Route>
     <Route path='/auth/login' element={<Login></Login>}></Route>
     <Route path='/auth/signup' element={<Signup></Signup>}></Route>
     <Route path='/setting' element={<Settings></Settings>}></Route>
