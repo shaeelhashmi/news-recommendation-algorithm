@@ -1,5 +1,9 @@
 package DataStructures
 
+type Fyppage struct {
+	Data     Response
+	Category string
+}
 type Image struct {
 	Src     string
 	IsVideo bool
@@ -31,6 +35,15 @@ func NewLinkedList() *LinkedList {
 		Head: nil,
 		Tail: nil,
 	}
+}
+func ListToFyppage(list *LinkedList, category string) []Fyppage {
+	temp := list.Head
+	var fyp []Fyppage
+	for temp != nil {
+		fyp = append(fyp, Fyppage{Data: temp.Value, Category: category})
+		temp = temp.Next
+	}
+	return fyp
 }
 func Append(list *LinkedList, value Response) {
 	node := &Node{Value: value, Next: nil}
@@ -100,4 +113,13 @@ func GetResponse(list *LinkedList) []Response {
 		temp = temp.Next
 	}
 	return responses
+}
+func GetLength(list *LinkedList) int {
+	temp := list.Head
+	counter := 0
+	for temp != nil {
+		counter++
+		temp = temp.Next
+	}
+	return counter
 }

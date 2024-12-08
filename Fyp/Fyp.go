@@ -13,14 +13,15 @@ import (
 	"github.com/gorilla/sessions"
 )
 
+type pair struct {
+	weight   float64
+	category string
+}
 type ReadData struct {
 	visit       int
 	latestVisit time.Time
 }
-type fyppage struct {
-	data     DataStructures.Response
-	category string
-}
+
 type fyppage2 struct {
 	Data     DataStructures.Response `json:"data"`
 	Category string                  `json:"category"`
@@ -49,23 +50,53 @@ func Read(name string, userName string, db *sql.DB, data *ReadData) bool {
 	data.latestVisit = latestVisit
 	return true
 }
-func MaxSize(world, business, entertainment, science, sports []DataStructures.Response) int {
-	max := len(world)
-	if len(business) > max {
-		max = len(business)
+func mergeSort(arr []pair) []pair {
+	if len(arr) <= 1 {
+		return arr
 	}
-	if len(entertainment) > max {
-		max = len(entertainment)
+
+	mid := len(arr) / 2
+	left := mergeSort(arr[:mid])
+	right := mergeSort(arr[mid:])
+	return merge(left, right)
+}
+
+func merge(left, right []pair) []pair {
+	result := make([]pair, 0, len(left)+len(right))
+	i, j := 0, 0
+	for i < len(left) && j < len(right) {
+		if left[i].weight > right[j].weight {
+			result = append(result, left[i])
+
+			i++
+		} else {
+			result = append(result, right[j])
+			j++
+		}
 	}
-	if len(science) > max {
-		max = len(science)
+
+	result = append(result, left[i:]...)
+	result = append(result, right[j:]...)
+
+	return result
+}
+func MaxSize(world, business, entertainment, science, sports *DataStructures.LinkedList) int {
+	max := DataStructures.GetLength(world)
+	if DataStructures.GetLength(business) > max {
+		max = DataStructures.GetLength(business)
 	}
-	if len(sports) > max {
-		max = len(sports)
+	if DataStructures.GetLength(entertainment) > max {
+		max = DataStructures.GetLength(entertainment)
+	}
+	if DataStructures.GetLength(science) > max {
+		max = DataStructures.GetLength(science)
+	}
+	if DataStructures.GetLength(sports) > max {
+		max = DataStructures.GetLength(sports)
 	}
 	return max
 }
-func Fyp(w http.ResponseWriter, r *http.Request, world, business, entertainment, science, sports []DataStructures.Response, store *sessions.CookieStore) {
+func Fyp(w http.ResponseWriter, r *http.Request, world, business, entertainment, science, sports *DataStructures.LinkedList, store *sessions.CookieStore) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
@@ -123,79 +154,44 @@ func Fyp(w http.ResponseWriter, r *http.Request, world, business, entertainment,
 			w.Write([]byte("Data not found"))
 			return
 		}
+		weightArray := []pair{
+			{CalculateWeight(worldData), "world"},
+			{CalculateWeight(businessData), "business"},
+			{CalculateWeight(entertainmentData), "entertainment"},
+			{CalculateWeight(scienceData), "science"},
+			{CalculateWeight(sportsData), "sports"},
+		}
+		weightArray = mergeSort(weightArray)
+		var response []DataStructures.Fyppage
 
-		worldWeight := CalculateWeight(worldData)
-		businessWeight := CalculateWeight(businessData)
-		entertainmentWeight := CalculateWeight(entertainmentData)
-		scienceWeight := CalculateWeight(scienceData)
-		sportsWeight := CalculateWeight(sportsData)
-		var response []fyppage
-		size := MaxSize(world, business, entertainment, science, sports)
-		starts := []int{0, 0, 0, 0, 0}
-		for i := 0; i < size; i++ {
-			currentNumber := 5
-			weight := []float64{worldWeight, businessWeight, entertainmentWeight, scienceWeight, sportsWeight}
-			if starts[0] >= len(world) {
-				weight[0] = 0
-			}
-			if starts[1] >= len(business) {
-				weight[1] = 0
-			}
-			if starts[2] >= len(entertainment) {
-				weight[2] = 0
-			}
-			if starts[3] >= len(science) {
-				weight[3] = 0
-			}
-			if starts[4] >= len(sports) {
-				weight[4] = 0
-			}
-			MaxWeight := MaximumWeight(weight)
-			var selected []fyppage
-			if MaxWeight == worldWeight {
-				weight[0] = 0
-				MaxWeight = MaximumWeight(weight)
-				for j := starts[0]; j < starts[0]+currentNumber && j < len(world); j++ {
-					selected = append(selected, fyppage{data: world[j], category: "world"})
-				}
-				starts[0] += currentNumber
-				currentNumber--
-			}
-			if MaxWeight == businessWeight {
-				weight[1] = 0
-				for j := starts[1]; j < starts[1]+currentNumber && j < len(business); j++ {
-					selected = append(selected, fyppage{data: business[j], category: "business"})
-				}
-				starts[1] += currentNumber
-				currentNumber--
-			}
-			if MaxWeight == entertainmentWeight {
-				weight[2] = 0
-				for j := starts[2]; j < starts[2]+currentNumber && j < len(entertainment); j++ {
-					selected = append(selected, fyppage{data: entertainment[j], category: "entertainment"})
-				}
-				starts[2] += currentNumber
-				currentNumber--
-			}
-			if MaxWeight == scienceWeight {
-				weight[3] = 0
-				for j := starts[3]; j < starts[3]+currentNumber && j < len(science); j++ {
-					selected = append(selected, fyppage{data: science[j], category: "science"})
+		chosen := 0
+		var selected []DataStructures.Fyppage
+		for i := 0; i < 5; i++ {
 
-				}
-				starts[3] += currentNumber
-				currentNumber--
-			}
-			if MaxWeight == sportsWeight {
-				for j := starts[4]; j < starts[4]+currentNumber && j < len(sports); j++ {
-					selected = append(selected, fyppage{data: sports[j], category: "sports"})
-				}
-				starts[4] += currentNumber
-				currentNumber--
-			}
-			selected = randomSort(selected)
+			switch weightArray[0].category {
+			case "world":
+				selected = append(selected, DataStructures.ListToFyppage(world, "world")...)
 
-			response = append(response, selected...)
+			case "business":
+				selected = append(selected, DataStructures.ListToFyppage(business, "business")...)
+
+			case "entertainment":
+				selected = append(selected, DataStructures.ListToFyppage(entertainment, "entertainment")...)
+
+			case "science":
+				selected = append(selected, DataStructures.ListToFyppage(science, "science")...)
+
+			case "sports":
+				selected = append(selected, DataStructures.ListToFyppage(sports, "sports")...)
+
+			}
+			chosen++
+			weightArray = weightArray[1:]
+			if chosen == 2 || i == 4 {
+				selected = randomSort(selected)
+				response = append(response, selected...)
+				selected = nil
+			}
 		}
 
 		if len(response) == 0 {
@@ -207,13 +203,14 @@ func Fyp(w http.ResponseWriter, r *http.Request, world, business, entertainment,
 		fmt.Println(len(response))
 		for _, item := range response {
 			Response = append(Response, fyppage2{
-				Data:     item.data,
-				Category: item.category,
+				Data:     item.Data,
+				Category: item.Category,
 			})
 		}
 
 		jsonResponse := JsonResponse{Fyp: Response}
 		err := json.NewEncoder(w).Encode(jsonResponse)
+
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -222,25 +219,18 @@ func Fyp(w http.ResponseWriter, r *http.Request, world, business, entertainment,
 	} else {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		w.Write([]byte("Method not allowed"))
+		return
 	}
 
 }
-func randomSort(data []fyppage) []fyppage {
+func randomSort(data []DataStructures.Fyppage) []DataStructures.Fyppage {
 	for i := 0; i < len(data); i++ {
 		j := rand.Intn(len(data))
 		data[i], data[j] = data[j], data[i]
 	}
 	return data
 }
-func MaximumWeight(weight []float64) float64 {
-	max := weight[0]
-	for i := 1; i < len(weight); i++ {
-		if weight[i] > max {
-			max = weight[i]
-		}
-	}
-	return max
-}
+
 func CalculateWeight(data ReadData) float64 {
 	daysSinceLastVisit := float64(time.Since(data.latestVisit).Hours() / 24)
 	if daysSinceLastVisit < 1 {

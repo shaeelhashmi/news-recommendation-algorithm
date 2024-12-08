@@ -7,8 +7,7 @@ import (
 	"scraper/DataStructures"
 	fyp "scraper/Fyp"
 	interest "scraper/Interest"
-	headlines "scraper/News/CNN/Headlines"
-	"sync"
+	Scraper "scraper/News/CNN/Scrapper"
 	"time"
 
 	"github.com/gorilla/sessions"
@@ -20,8 +19,6 @@ func enableCors(w *http.ResponseWriter) {
 	(*w).Header().Set("Access-Control-Allow-Credentials", "true")
 }
 
-var cache = &sync.Map{}
-
 type JsonResponse struct {
 	Headlines []DataStructures.Response `json:"News"`
 }
@@ -31,53 +28,71 @@ var (
 )
 
 func main() {
+	var (
+		world         *DataStructures.LinkedList
+		business      *DataStructures.LinkedList
+		entertainment *DataStructures.LinkedList
+		science       *DataStructures.LinkedList
+		sports        *DataStructures.LinkedList
+	)
+
+	updateHeadlines := func() {
+		world = Scraper.ImportHeadlines("https://edition.cnn.com/world", "div.card")
+		business = Scraper.ImportHeadlines("https://edition.cnn.com/business", "div.card")
+		entertainment = Scraper.ImportHeadlines("https://edition.cnn.com/entertainment", "div.card")
+		science = Scraper.ImportHeadlines("https://edition.cnn.com/science", "div.card")
+		sports = Scraper.ImportHeadlines("https://edition.cnn.com/sport", "div.card")
+	}
+
+	updateHeadlines()
+
+	go func() {
+		for {
+			time.Sleep(30 * time.Minute)
+			updateHeadlines()
+		}
+	}()
+
 	store.Options = &sessions.Options{
 		Path:     "/",
 		MaxAge:   3600,
 		HttpOnly: true,
 	}
 	corsHandler := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:5173"}, // React default port
+		AllowedOrigins:   []string{"http://localhost:5173"},
 		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
 		AllowedHeaders:   []string{"Content-Type"},
-		AllowCredentials: true, // Allow credentials (cookies)
+		AllowCredentials: true,
 	})
 	auth.ConnectDB()
 	mux := http.NewServeMux()
 	mux.HandleFunc("/news/", func(w http.ResponseWriter, r *http.Request) {
 		q := r.URL.Query().Get("topic")
-		q2 := r.URL.Query().Get("subtopic")
-		var endUrl string
-		if q2 != "" {
-			endUrl = q + "/" + q2
-		} else {
-			endUrl = q
-		}
 		enableCors(&w)
 		w.Header().Set("Content-Type", "application/json")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 		w.Header().Set("Cache-Control", "public, max-age=1800")
+		endUrl := q
 		if r.Method == "OPTIONS" {
 			return
 		}
-		if data, ok := cache.Load(q); ok {
-			jsonResponse := JsonResponse{Headlines: data.([]DataStructures.Response)}
-			json.NewEncoder(w).Encode(jsonResponse)
+		var jsonResponse JsonResponse
+		if endUrl == "world" {
+			jsonResponse = JsonResponse{Headlines: DataStructures.GetResponse(world)}
+		} else if endUrl == "business" {
+			jsonResponse = JsonResponse{Headlines: DataStructures.GetResponse(business)}
+		} else if endUrl == "entertainment" {
+			jsonResponse = JsonResponse{Headlines: DataStructures.GetResponse(entertainment)}
+		} else if endUrl == "science" {
+			jsonResponse = JsonResponse{Headlines: DataStructures.GetResponse(science)}
+		} else if endUrl == "sports" {
+			jsonResponse = JsonResponse{Headlines: DataStructures.GetResponse(sports)}
+		} else {
+			w.WriteHeader(http.StatusNotFound)
+			w.Write([]byte("404 page not found"))
 			return
 		}
-		news := headlines.ImportHeadlines(endUrl, "div.card")
-		if len(news) == 0 {
-			http.Error(w, "404 page not found", http.StatusNotFound)
-			return
-		}
-		cache.Store(endUrl, news)
-		go func() {
-			<-time.After(30 * time.Minute)
-			cache.Delete(endUrl)
-		}()
-
-		jsonResponse := JsonResponse{Headlines: news}
 		json.NewEncoder(w).Encode(jsonResponse)
 	})
 	mux.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
@@ -102,11 +117,7 @@ func main() {
 		interest.InterestManage(w, r, store)
 	})
 	mux.HandleFunc("/fyp", func(w http.ResponseWriter, r *http.Request) {
-		world := headlines.ImportHeadlines("world", "div.card")
-		business := headlines.ImportHeadlines("business", "div.card")
-		entertainment := headlines.ImportHeadlines("entertainment", "div.card")
-		science := headlines.ImportHeadlines("science", "div.card")
-		sports := headlines.ImportHeadlines("sports", "div.card")
+
 		fyp.Fyp(w, r, world, business, entertainment, science, sports, store)
 	})
 	handler := corsHandler.Handler(mux)
