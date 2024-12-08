@@ -92,7 +92,7 @@ export default function HomePage(props:props) {
        >
        {data.map((post,index) => (
         <div key={index}>
-        <NewsCard image={post.data.Img} link={post.data.Links} description={post.data.Description} type={post.data.category}/>
+        <NewsCard image={post.Img} link={post.Links} description={post.Description} type={post.category}/>
         </div>
        ))}
        </InfiniteScroll>

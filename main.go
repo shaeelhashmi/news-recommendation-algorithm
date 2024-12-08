@@ -37,11 +37,11 @@ func main() {
 	)
 
 	updateHeadlines := func() {
-		world = Scraper.ImportHeadlines("https://edition.cnn.com/world", "div.card")
-		business = Scraper.ImportHeadlines("https://edition.cnn.com/business", "div.card")
-		entertainment = Scraper.ImportHeadlines("https://edition.cnn.com/entertainment", "div.card")
-		science = Scraper.ImportHeadlines("https://edition.cnn.com/science", "div.card")
-		sports = Scraper.ImportHeadlines("https://edition.cnn.com/sport", "div.card")
+		world = Scraper.ImportHeadlines("div.card", "https://edition.cnn.com/world")
+		business = Scraper.ImportHeadlines("div.card", "https://edition.cnn.com/business")
+		entertainment = Scraper.ImportHeadlines("div.card", "https://edition.cnn.com/entertainment")
+		science = Scraper.ImportHeadlines("div.card", "https://edition.cnn.com/science")
+		sports = Scraper.ImportHeadlines("div.card", "https://edition.cnn.com/sport")
 	}
 
 	updateHeadlines()

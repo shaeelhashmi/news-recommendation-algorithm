@@ -23,8 +23,10 @@ type ReadData struct {
 }
 
 type fyppage2 struct {
-	Data     DataStructures.Response `json:"data"`
-	Category string                  `json:"category"`
+	Img         DataStructures.Image `json:"Img"`
+	Links       string               `json:"Links"`
+	Description string               `json:"Description"`
+	Category    string               `json:"Category"`
 }
 
 type JsonResponse struct {
@@ -100,7 +102,6 @@ func Fyp(w http.ResponseWriter, r *http.Request, world, business, entertainment,
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-	w.Header().Set("Cache-Control", "public, max-age=1800")
 	auth.EnableCors(&w)
 	db := auth.ConnectDB()
 	auth.EnableCors(&w)
@@ -200,14 +201,16 @@ func Fyp(w http.ResponseWriter, r *http.Request, world, business, entertainment,
 			return
 		}
 		Response := []fyppage2{}
-		fmt.Println(len(response))
+		fmt.Println(response)
 		for _, item := range response {
+			fmt.Println(item.Data.Img)
 			Response = append(Response, fyppage2{
-				Data:     item.Data,
-				Category: item.Category,
+				Img:         item.Data.Img,
+				Links:       item.Data.Links,
+				Description: item.Data.Description,
+				Category:    item.Category,
 			})
 		}
-
 		jsonResponse := JsonResponse{Fyp: Response}
 		err := json.NewEncoder(w).Encode(jsonResponse)
 
