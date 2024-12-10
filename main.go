@@ -5,6 +5,7 @@ import (
 	"net/http"
 	auth "scraper/Auth"
 	"scraper/DataStructures"
+	deleteaccount "scraper/DeleteAccount"
 	fyp "scraper/Fyp"
 	interest "scraper/Interest"
 	Scraper "scraper/News/CNN/Scrapper"
@@ -34,6 +35,7 @@ func main() {
 		entertainment *DataStructures.LinkedList
 		science       *DataStructures.LinkedList
 		sports        *DataStructures.LinkedList
+		health        *DataStructures.LinkedList
 	)
 
 	updateHeadlines := func() {
@@ -42,6 +44,7 @@ func main() {
 		entertainment = Scraper.ImportHeadlines("div.card", "https://edition.cnn.com/entertainment")
 		science = Scraper.ImportHeadlines("div.card", "https://edition.cnn.com/science")
 		sports = Scraper.ImportHeadlines("div.card", "https://edition.cnn.com/sport")
+		health = Scraper.ImportHeadlines("div.card", "https://edition.cnn.com/health")
 	}
 
 	updateHeadlines()
@@ -88,6 +91,8 @@ func main() {
 			jsonResponse = JsonResponse{Headlines: DataStructures.GetResponse(science)}
 		} else if endUrl == "sports" {
 			jsonResponse = JsonResponse{Headlines: DataStructures.GetResponse(sports)}
+		} else if endUrl == "health" {
+			jsonResponse = JsonResponse{Headlines: DataStructures.GetResponse(health)}
 		} else {
 			w.WriteHeader(http.StatusNotFound)
 			w.Write([]byte("404 page not found"))
@@ -117,9 +122,12 @@ func main() {
 		interest.InterestManage(w, r, store)
 	})
 	mux.HandleFunc("/fyp", func(w http.ResponseWriter, r *http.Request) {
-
 		fyp.Fyp(w, r, world, business, entertainment, science, sports, store)
 	})
+	mux.HandleFunc("/delete", func(w http.ResponseWriter, r *http.Request) {
+		deleteaccount.Delete(w, r, store)
+	})
+
 	handler := corsHandler.Handler(mux)
 	http.ListenAndServe(":8080", handler)
 

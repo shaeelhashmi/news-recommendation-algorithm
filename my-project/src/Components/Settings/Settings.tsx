@@ -2,6 +2,7 @@ import { useEffect,useState } from "react"
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../Navbar/Navbar";
+import Delete from "./Delete";
 export default function Settings() {
     const [username,setUsername]=useState("");
     const[passwordError,setPasswordError]=useState("");
@@ -77,7 +78,7 @@ export default function Settings() {
   return (
     <>
       <Navbar></Navbar>
-      <div>
+      <div className="z-0">
         <h1 className="mx-auto mt-32 text-4xl font-bold text-center ">Settings</h1>
         <div className="mx-auto w-96">
             <form  onSubmit={handlePasswordChange}>
@@ -105,9 +106,12 @@ export default function Settings() {
              <button className="w-[100px] p-1 text-white bg-blue-600 rounded hover:bg-blue-700 duration-500 transition-all" type="submit">Change</button>
              </div>
             </form>
-
+           <Delete/>
+              
         </div>
+      
       </div>
+      
     </>
   )
 }

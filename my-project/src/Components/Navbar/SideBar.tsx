@@ -10,6 +10,10 @@ export default function SideBar() {
     let data=
       [
         {
+          "URL": "/",
+          "Text": "Home",
+        },
+        {
           "URL": "/world",
           "Text": "World",
         },
@@ -35,7 +39,7 @@ export default function SideBar() {
         },
         {
           "URL":"/setting",
-          "Text":"Setting"
+          "Text":"Settings"
         }
         
       ]

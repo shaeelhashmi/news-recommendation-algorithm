@@ -29,7 +29,7 @@ export default function Login() {
                 }
             );
             if (response.status === 200) {
-                navigate("/news");
+                navigate("/");
             } 
         } catch (error: any) {
            if (axios.isAxiosError(error) && error.response?.status === 401) {
@@ -46,7 +46,7 @@ export default function Login() {
       const checkLogin=async()=>{
         try{
           await axios.get(("http://localhost:8080/checklogin"),{withCredentials:true});
-          navigate("/news");  
+          navigate("/");  
         }catch(error:any){
           console.log(error.response.data)
         }

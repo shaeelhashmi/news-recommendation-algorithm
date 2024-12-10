@@ -88,7 +88,7 @@ export default function HomePage(props:props) {
        next={fetchMore}
        hasMore={hasMore}
        loader={<InfiniteScrollLoader></InfiniteScrollLoader>}
-       className="grid w-[80vw] grid-cols-1   lg:grid-cols-2 justify-items-center justify-center ml-48" 
+       className="grid lg:w-[80vw] w-screen grid-cols-1   lg:grid-cols-2 justify-items-center justify-center lg:ml-48 ml-0 " 
        >
        {data.map((post,index) => (
         <div key={index}>

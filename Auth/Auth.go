@@ -12,6 +12,7 @@ import (
 	"github.com/go-sql-driver/mysql"
 	"github.com/gorilla/sessions"
 	"github.com/joho/godotenv"
+	// "scraper/Queries"
 )
 
 var Db *sql.DB
@@ -90,7 +91,7 @@ func ConnectDB() *sql.DB {
 	return Db
 }
 
-func hashPassword(password string, salt []byte) string {
+func HashPassword(password string, salt []byte) string {
 	var passwordBytes = []byte(password)
 	var sha512Hasher = sha512.New()
 	passwordBytes = append(passwordBytes, salt...)
@@ -115,7 +116,7 @@ func SignUphandler(w http.ResponseWriter, r *http.Request) {
 		username := r.FormValue("username")
 		password := r.FormValue("password")
 		salt := generateRandomSalt(16)
-		hashedPassword := hashPassword(password, salt)
+		hashedPassword := HashPassword(password, salt)
 		tx, err := Db.Begin()
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -277,7 +278,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request, store *sessions.Cookie
 			w.Write([]byte("Internal server error"))
 			return
 		}
-		passwordHash := hashPassword(password, salt)
+		passwordHash := HashPassword(password, salt)
 		if passwordHash != hashedPassword {
 			w.WriteHeader(http.StatusUnauthorized)
 			w.Write([]byte("Invalid username or password"))
@@ -327,14 +328,14 @@ func ChangePasswordHandler(w http.ResponseWriter, r *http.Request, store *sessio
 			w.Write([]byte("Internal server error"))
 			return
 		}
-		passwordHash := hashPassword(oldPassword, salt)
+		passwordHash := HashPassword(oldPassword, salt)
 		if passwordHash != hashedPassword {
 			w.WriteHeader(http.StatusUnauthorized)
 			w.Write([]byte("Invalid password"))
 			return
 		}
 		newSalt := generateRandomSalt(16)
-		newHashedPassword := hashPassword(newPassword, newSalt)
+		newHashedPassword := HashPassword(newPassword, newSalt)
 		stmt, err = Db.Prepare("UPDATE users SET password = ?, salt = ? WHERE username = ?")
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
