@@ -3,7 +3,6 @@ package fyp
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"math/rand"
 	"net/http"
 	auth "scraper/Auth"
@@ -201,9 +200,7 @@ func Fyp(w http.ResponseWriter, r *http.Request, world, business, entertainment,
 			return
 		}
 		Response := []fyppage2{}
-		fmt.Println(response)
 		for _, item := range response {
-			fmt.Println(item.Data.Img)
 			Response = append(Response, fyppage2{
 				Img:         item.Data.Img,
 				Links:       item.Data.Links,

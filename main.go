@@ -72,7 +72,7 @@ func main() {
 		w.Header().Set("Content-Type", "application/json")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-		w.Header().Set("Cache-Control", "public, max-age=1800")
+
 		endUrl := q
 		if r.Method == "OPTIONS" {
 			return

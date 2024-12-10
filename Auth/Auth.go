@@ -5,7 +5,6 @@ import (
 	"crypto/sha512"
 	"database/sql"
 	"encoding/hex"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -46,7 +45,6 @@ func CheckSessionExists(w http.ResponseWriter, r *http.Request, store *sessions.
 func LogoutHandler(w http.ResponseWriter, r *http.Request, store *sessions.CookieStore) {
 	EnableCors(&w)
 	w.Header().Set("Content-Type", "application/json")
-	fmt.Println("Logging out")
 	session, err := store.Get(r, "user-session")
 	if err != nil {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
@@ -120,7 +118,6 @@ func SignUphandler(w http.ResponseWriter, r *http.Request) {
 		hashedPassword := hashPassword(password, salt)
 		tx, err := Db.Begin()
 		if err != nil {
-			fmt.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("Internal server error"))
 			return
@@ -134,14 +131,12 @@ salt BLOB NOT NULL
 );`)
 		if err != nil {
 			tx.Rollback()
-			fmt.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("Internal server error"))
 			return
 		}
 		err = Db.QueryRow("SELECT EXISTS(SELECT 1 FROM users WHERE username=?)", username).Scan(&exists)
 		if err != nil {
-			fmt.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("Internal server error"))
 			return
@@ -201,7 +196,6 @@ salt BLOB NOT NULL
 			_, err = tx.Exec(table)
 			if err != nil {
 				tx.Rollback()
-				fmt.Println(err)
 				w.WriteHeader(http.StatusInternalServerError)
 				w.Write([]byte("Internal server error"))
 				return
@@ -211,7 +205,6 @@ salt BLOB NOT NULL
 		_, err = tx.Exec("INSERT INTO users (username, password, salt) VALUES (?, ?, ?)", username, hashedPassword, salt)
 		if err != nil {
 			tx.Rollback()
-			fmt.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("Internal server error"))
 			return
@@ -228,7 +221,6 @@ salt BLOB NOT NULL
 			_, err = tx.Exec(table, username, 0)
 			if err != nil {
 				tx.Rollback()
-				fmt.Println(err)
 				w.WriteHeader(http.StatusInternalServerError)
 				w.Write([]byte("Internal server error"))
 				return
@@ -236,7 +228,6 @@ salt BLOB NOT NULL
 		}
 		err = tx.Commit()
 		if err != nil {
-			fmt.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("Internal server error"))
 			return
@@ -375,24 +366,20 @@ func ChangeUsernameHandler(w http.ResponseWriter, r *http.Request, store *sessio
 		}
 		username := session.Values["username"].(string)
 		newUsername := r.FormValue("newUsername")
-		fmt.Println(username, newUsername)
 		var exists bool
 		err = Db.QueryRow("SELECT EXISTS(SELECT 1 FROM users WHERE username=?)", newUsername).Scan(&exists)
 		if err != nil {
-			fmt.Println(err, "1")
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("Internal server error"))
 			return
 		}
 		if exists {
-			fmt.Println(err, "2")
 			w.WriteHeader(http.StatusConflict)
 			w.Write([]byte("Username already exists"))
 			return
 		}
 		_, err = Db.Exec("SET sql_mode = ''")
 		if err != nil {
-			fmt.Println(err, "setting sql_mode")
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("Internal server error"))
 			return
@@ -400,7 +387,7 @@ func ChangeUsernameHandler(w http.ResponseWriter, r *http.Request, store *sessio
 		stmt, err := Db.Prepare("UPDATE users SET username = ? WHERE username = ?")
 
 		if err != nil {
-			fmt.Println(err, "3")
+
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("Internal server error"))
 			return
@@ -408,7 +395,6 @@ func ChangeUsernameHandler(w http.ResponseWriter, r *http.Request, store *sessio
 		defer stmt.Close()
 		_, err = stmt.Exec(newUsername, username)
 		if err != nil {
-			fmt.Println(err, "4")
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("Internal server error"))
 			return
@@ -417,7 +403,6 @@ func ChangeUsernameHandler(w http.ResponseWriter, r *http.Request, store *sessio
 		session.Values["username"] = newUsername
 		err = session.Save(r, w)
 		if err != nil {
-			fmt.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("Internal server error"))
 			return
