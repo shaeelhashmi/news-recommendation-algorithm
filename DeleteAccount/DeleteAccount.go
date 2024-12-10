@@ -1,7 +1,6 @@
 package deleteaccount
 
 import (
-	"fmt"
 	"net/http"
 	auth "scraper/Auth"
 
@@ -18,26 +17,23 @@ func Delete(w http.ResponseWriter, r *http.Request, store *sessions.CookieStore)
 		db = auth.ConnectDB()
 		session, err := store.Get(r, "user-session")
 		if err != nil {
-			fmt.Print(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		if !auth.CheckSessionExists(w, r, store) {
-			fmt.Print(err)
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
+
 		username := session.Values["username"]
 		var exist bool
 		stmt, err := db.Prepare("SELECT EXISTS(SELECT 1 FROM users WHERE username=?)")
 		if err != nil {
-			fmt.Print(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		err = stmt.QueryRow(username).Scan(&exist)
 		if err != nil {
-			fmt.Print(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -48,7 +44,6 @@ func Delete(w http.ResponseWriter, r *http.Request, store *sessions.CookieStore)
 		password := r.FormValue("password")
 		stmt, err = db.Prepare("SELECT password,salt FROM users WHERE username=?")
 		if err != nil {
-			fmt.Print(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -58,33 +53,40 @@ func Delete(w http.ResponseWriter, r *http.Request, store *sessions.CookieStore)
 		)
 		err = stmt.QueryRow(username).Scan(&dbPassword, &salt)
 		if err != nil {
-			fmt.Print(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		if auth.HashPassword(password, salt) != dbPassword {
-			fmt.Print(err)
 			http.Error(w, "Incorrect password", http.StatusUnauthorized)
 			return
 		}
+		tx, err := db.Begin()
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 		for _, query := range queries.DeleteQueries {
-			stmt, err = db.Prepare(query)
+			stmt, err = tx.Prepare(query)
 			if err != nil {
-				fmt.Print(err)
+				tx.Rollback()
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
 			_, err = stmt.Exec(username)
 			if err != nil {
-				fmt.Print(err)
+				tx.Rollback()
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
 		}
+		err = tx.Commit()
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 		session.Options.MaxAge = -1
 		err = session.Save(r, w)
 		if err != nil {
-			fmt.Print(err)
 			http.Error(w, "Internal server error", http.StatusInternalServerError)
 			return
 		}

@@ -9,10 +9,11 @@ import (
 	"net/http"
 	"os"
 
+	queries "scraper/Queries"
+
 	"github.com/go-sql-driver/mysql"
 	"github.com/gorilla/sessions"
 	"github.com/joho/godotenv"
-	// "scraper/Queries"
 )
 
 var Db *sql.DB
@@ -148,52 +149,7 @@ salt BLOB NOT NULL
 			return
 		}
 
-		tables := []string{
-			`CREATE TABLE IF NOT EXISTS science (
-				userName VARCHAR(255) NOT NULL PRIMARY KEY,
-				visit INT DEFAULT 0,
-				latestVisit TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-				FOREIGN KEY (userName) REFERENCES users(username)
-				ON UPDATE CASCADE
-			);`,
-			`CREATE TABLE IF NOT EXISTS business (
-				userName VARCHAR(255) NOT NULL PRIMARY KEY,
-				visit INT DEFAULT 0,
-				latestVisit TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-				FOREIGN KEY (userName) REFERENCES users(username)
-				ON UPDATE CASCADE
-			);`,
-			`CREATE TABLE IF NOT EXISTS health (
-				userName VARCHAR(255) NOT NULL PRIMARY KEY,
-				visit INT DEFAULT 0,
-				latestVisit TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-				FOREIGN KEY (userName) REFERENCES users(username)
-				ON UPDATE CASCADE
-			);`,
-			`CREATE TABLE IF NOT EXISTS sports (
-				userName VARCHAR(255) NOT NULL PRIMARY KEY,
-				visit INT DEFAULT 0,
-				latestVisit TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-				FOREIGN KEY (userName) REFERENCES users(username)
-				ON UPDATE CASCADE
-			);`,
-			`CREATE TABLE IF NOT EXISTS entertainment (
-				userName VARCHAR(255) NOT NULL PRIMARY KEY,
-				visit INT DEFAULT 0,
-				latestVisit TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-				FOREIGN KEY (userName) REFERENCES users(username)
-				ON UPDATE CASCADE
-			);`,
-			`CREATE TABLE IF NOT EXISTS world (
-				userName VARCHAR(255) NOT NULL PRIMARY KEY,
-				visit INT DEFAULT 0,
-				latestVisit TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-				FOREIGN KEY (userName) REFERENCES users(username)
-				ON UPDATE CASCADE
-			);`,
-		}
-
-		for _, table := range tables {
+		for _, table := range queries.Tables {
 			_, err = tx.Exec(table)
 			if err != nil {
 				tx.Rollback()
