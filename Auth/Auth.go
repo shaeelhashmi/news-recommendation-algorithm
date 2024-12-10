@@ -166,15 +166,8 @@ salt BLOB NOT NULL
 			w.Write([]byte("Internal server error"))
 			return
 		}
-		InsertionTable := []string{
-			"INSERT INTO health (userName, visit) VALUES (?, ?)",
-			"INSERT INTO sports (userName, visit) VALUES (?, ?)",
-			"INSERT INTO entertainment (userName, visit) VALUES (?, ?)",
-			"INSERT INTO world (userName, visit) VALUES (?, ?)",
-			"INSERT INTO science (userName, visit) VALUES (?, ?)",
-			"INSERT INTO business (userName, visit) VALUES (?, ?)",
-		}
-		for _, table := range InsertionTable {
+
+		for _, table := range queries.InsertionTable {
 			_, err = tx.Exec(table, username, 0)
 			if err != nil {
 				tx.Rollback()

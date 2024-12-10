@@ -53,3 +53,11 @@ var Tables = []string{
 		ON UPDATE CASCADE
 	);`,
 }
+var InsertionTable = []string{
+	"INSERT INTO health (userName, visit) VALUES (?, ?)",
+	"INSERT INTO sports (userName, visit) VALUES (?, ?)",
+	"INSERT INTO entertainment (userName, visit) VALUES (?, ?)",
+	"INSERT INTO world (userName, visit) VALUES (?, ?)",
+	"INSERT INTO science (userName, visit) VALUES (?, ?)",
+	"INSERT INTO business (userName, visit) VALUES (?, ?)",
+}
