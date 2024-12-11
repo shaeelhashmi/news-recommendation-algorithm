@@ -359,7 +359,7 @@ func ChangeUsernameHandler(w http.ResponseWriter, r *http.Request, store *sessio
 		}
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("Username changed successfully"))
-
+		return
 	}
 	w.WriteHeader(http.StatusMethodNotAllowed)
 	w.Write([]byte("Invalid request method"))

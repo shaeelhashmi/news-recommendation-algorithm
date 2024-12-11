@@ -122,10 +122,12 @@ func Fyp(w http.ResponseWriter, r *http.Request, world, business, entertainment,
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
 		w.Write([]byte("Session not found"))
+		return
 	}
 	if session.Values["username"] == nil {
 		w.WriteHeader(http.StatusUnauthorized)
 		w.Write([]byte("Session not found"))
+		return
 	}
 	userName, ok := session.Values["username"].(string)
 	if !ok || userName == "" {
@@ -137,7 +139,6 @@ func Fyp(w http.ResponseWriter, r *http.Request, world, business, entertainment,
 		w.Header().Set("Content-Type", "application/json")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-		w.Header().Set("Cache-Control", "public, max-age=1800")
 		var worldData ReadData
 		var businessData ReadData
 		var entertainmentData ReadData
@@ -252,13 +253,7 @@ func Fyp(w http.ResponseWriter, r *http.Request, world, business, entertainment,
 			})
 		}
 		jsonResponse := JsonResponse{Fyp: Response}
-		err := json.NewEncoder(w).Encode(jsonResponse)
-
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
+		json.NewEncoder(w).Encode(jsonResponse)
 	} else {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		w.Write([]byte("Method not allowed"))

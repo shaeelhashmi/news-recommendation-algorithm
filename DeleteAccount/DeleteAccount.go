@@ -20,10 +20,6 @@ func Delete(w http.ResponseWriter, r *http.Request, store *sessions.CookieStore)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		if !auth.CheckSessionExists(w, r, store) {
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
-			return
-		}
 
 		username := session.Values["username"]
 		var exist bool

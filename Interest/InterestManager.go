@@ -53,11 +53,6 @@ func InterestManage(w http.ResponseWriter, r *http.Request, store *sessions.Cook
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		_, err = stmt.Exec(username)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
 		w.Write([]byte("Success"))
 		return
 	}
