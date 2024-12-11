@@ -81,6 +81,20 @@ func merge(left, right []pair) []pair {
 
 	return result
 }
+func IsSame(weight []pair) bool {
+	size := len(weight)
+	if size == 0 {
+		return true
+	}
+	previous := weight[0].weight
+	for i := 1; i < size-1; i++ {
+		if weight[i].weight != previous {
+			return false
+		}
+		previous = weight[i].weight
+	}
+	return true
+}
 func MaxSize(world, business, entertainment, science, sports *DataStructures.LinkedList) int {
 	max := DataStructures.GetLength(world)
 	if DataStructures.GetLength(business) > max {
@@ -97,7 +111,7 @@ func MaxSize(world, business, entertainment, science, sports *DataStructures.Lin
 	}
 	return max
 }
-func Fyp(w http.ResponseWriter, r *http.Request, world, business, entertainment, science, sports *DataStructures.LinkedList, store *sessions.CookieStore) {
+func Fyp(w http.ResponseWriter, r *http.Request, world, business, entertainment, science, sports, health *DataStructures.LinkedList, store *sessions.CookieStore) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
@@ -129,6 +143,12 @@ func Fyp(w http.ResponseWriter, r *http.Request, world, business, entertainment,
 		var entertainmentData ReadData
 		var scienceData ReadData
 		var sportsData ReadData
+		var healthData ReadData
+		if !Read("health", userName, db, &healthData) {
+			w.WriteHeader(http.StatusNotFound)
+			w.Write([]byte("Data not found"))
+			return
+		}
 		if !Read("world", userName, db, &worldData) {
 			w.WriteHeader(http.StatusNotFound)
 			w.Write([]byte("Data not found"))
@@ -160,6 +180,7 @@ func Fyp(w http.ResponseWriter, r *http.Request, world, business, entertainment,
 			{CalculateWeight(entertainmentData), "entertainment"},
 			{CalculateWeight(scienceData), "science"},
 			{CalculateWeight(sportsData), "sports"},
+			{CalculateWeight(healthData), "health"},
 		}
 		weightArray = mergeSort(weightArray)
 		var response []DataStructures.Fyppage
@@ -167,7 +188,28 @@ func Fyp(w http.ResponseWriter, r *http.Request, world, business, entertainment,
 		chosen := 0
 		var selected []DataStructures.Fyppage
 		for i := 0; i < 5; i++ {
+			if IsSame(weightArray) {
+				for _, item := range weightArray {
+					switch item.category {
+					case "world":
+						selected = append(selected, DataStructures.ListToFyppage(world, "world")...)
+					case "business":
+						selected = append(selected, DataStructures.ListToFyppage(business, "business")...)
+					case "entertainment":
+						selected = append(selected, DataStructures.ListToFyppage(entertainment, "entertainment")...)
+					case "science":
+						selected = append(selected, DataStructures.ListToFyppage(science, "science")...)
+					case "sports":
+						selected = append(selected, DataStructures.ListToFyppage(sports, "sports")...)
+					case "health":
+						selected = append(selected, DataStructures.ListToFyppage(health, "health")...)
 
+					}
+				}
+				selected = randomSort(selected)
+				response = append(response, selected...)
+				break
+			}
 			switch weightArray[0].category {
 			case "world":
 				selected = append(selected, DataStructures.ListToFyppage(world, "world")...)
@@ -183,7 +225,8 @@ func Fyp(w http.ResponseWriter, r *http.Request, world, business, entertainment,
 
 			case "sports":
 				selected = append(selected, DataStructures.ListToFyppage(sports, "sports")...)
-
+			case "health":
+				selected = append(selected, DataStructures.ListToFyppage(health, "health")...)
 			}
 			chosen++
 			weightArray = weightArray[1:]

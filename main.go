@@ -122,7 +122,7 @@ func main() {
 		interest.InterestManage(w, r, store)
 	})
 	mux.HandleFunc("/fyp", func(w http.ResponseWriter, r *http.Request) {
-		fyp.Fyp(w, r, world, business, entertainment, science, sports, store)
+		fyp.Fyp(w, r, world, business, entertainment, science, sports, health, store)
 	})
 	mux.HandleFunc("/delete", func(w http.ResponseWriter, r *http.Request) {
 		deleteaccount.Delete(w, r, store)

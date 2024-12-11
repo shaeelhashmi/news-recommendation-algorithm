@@ -51,7 +51,6 @@ export default function HomePage(props:props) {
       try{
       const fetchData = async () => {
         const result= await   axios.get((`http://localhost:8080/fyp`),{withCredentials:true});
-        console.log(result.data.fyp)
         setPosts(result.data.fyp);
         const newData = [];
         const sortedPosts = props.Sort([...result.data.fyp]);
