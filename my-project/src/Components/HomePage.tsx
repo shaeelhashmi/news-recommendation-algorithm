@@ -97,7 +97,6 @@ export default function HomePage(props:props) {
             });
             const data = fuse.search(search).map(({ item }) => item);
             setData(data);
-            setData(data);
           }} className="flex items-center justify-center">
             <button className="p-2 text-white bg-green-700 " ><Search></Search></button>
           <input
@@ -108,11 +107,12 @@ export default function HomePage(props:props) {
         onBlur={(e:any) =>{ 
           setSearch('')
           e.target.value=''
-          if(selector){
-            setData(sortData)
-            return
+          const source = selector ? sortData : posts;
+          const newData = [];
+          for (let i = 0; i < idx && i < source.length; i++) {
+            newData.push(source[i]);
           }
-          setData(posts)
+          setData(newData);
         }}
     />
     </form>

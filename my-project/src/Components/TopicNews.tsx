@@ -113,11 +113,12 @@ export default function TopicNews(props: any) {
         onBlur={(e:any) =>{ 
           setSearch('')
           e.target.value=''
-          if(selector){
-            setData(sortData)
-            return
+          const source = selector ? sortData : posts;
+          const newData = [];
+          for (let i = 0; i < idx && i < source.length; i++) {
+            newData.push(source[i]);
           }
-          setData(posts)
+          setData(newData);
         }}
     />
     </form>
