@@ -5,7 +5,6 @@ import InfiniteScrollLoader from './Loader/InfiniteScrollLoader';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-
 import axios from 'axios';
 interface props{
     Sort: any
@@ -80,6 +79,7 @@ export default function HomePage(props:props) {
   return (
     loader?<Loader></Loader>:
     <>
+  
     <div >
     <InfiniteScroll
        dataLength={data.length}

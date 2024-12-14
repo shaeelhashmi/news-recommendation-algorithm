@@ -6,7 +6,7 @@ import Loader from './Loader/Loader';
 import InfiniteScrollLoader from './Loader/InfiniteScrollLoader';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useSelector } from 'react-redux';
-import Navbar from './Navbar/Navbar';
+import Search from "./SVG/Search";
 import NotFound from './404pages';
 
 export default function TopicNews(props: any) {
@@ -83,10 +83,30 @@ export default function TopicNews(props: any) {
   if (error) {
     return <NotFound />;
   }
-
   return (
     loader ? <Loader /> :
       <>
+        <div className="flex items-center justify-center mt-28">
+          
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              const search= e.currentTarget.search.value.trim();
+          navigate(`/${topic}/search?search=${encodeURIComponent(search)}`);
+            }} className="flex items-center justify-center">
+            <button className="flex items-center justify-center w-10 h-10 transition-all duration-500 ease-in-out border-2 border-green-700 hover:bg-green-700">
+          <Search></Search>
+          </button>
+          <input
+      type="text"
+      placeholder="Search"
+      className="w-[200px] h-10 border-2 border-green-700 p-2"
+      name='search'
+
+    />
+    </form>
+      
+          </div>
+          <div ></div>
         <div>
           <InfiniteScroll
             dataLength={data.length}
