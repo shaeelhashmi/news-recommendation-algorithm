@@ -8,7 +8,9 @@ import (
 	deleteaccount "scraper/DeleteAccount"
 	fyp "scraper/Fyp"
 	interest "scraper/Interest"
-	Scraper "scraper/News/CNN/Scrapper"
+	Scraper "scraper/News/CNN"
+	geonews "scraper/News/GeoNews"
+
 	"time"
 
 	"github.com/gorilla/sessions"
@@ -37,14 +39,19 @@ func main() {
 		sports        *DataStructures.LinkedList
 		health        *DataStructures.LinkedList
 	)
-
 	updateHeadlines := func() {
 		world = Scraper.ImportHeadlines("div.card", "https://edition.cnn.com/world")
+		DataStructures.AppendList(world, geonews.ImportHeadlines("div.list ul li", "https://www.geo.tv/category/world"))
 		business = Scraper.ImportHeadlines("div.card", "https://edition.cnn.com/business")
+		DataStructures.AppendList(business, geonews.ImportHeadlines("div.list ul li", "https://www.geo.tv/category/business"))
 		entertainment = Scraper.ImportHeadlines("div.card", "https://edition.cnn.com/entertainment")
+		DataStructures.AppendList(entertainment, geonews.ImportHeadlines("div.list ul li", "https://www.geo.tv/category/entertainment"))
 		science = Scraper.ImportHeadlines("div.card", "https://edition.cnn.com/science")
+		DataStructures.AppendList(science, geonews.ImportHeadlines("div.list ul li", "https://www.geo.tv/category/science"))
 		sports = Scraper.ImportHeadlines("div.card", "https://edition.cnn.com/sport")
+		DataStructures.AppendList(sports, geonews.ImportHeadlines("div.list ul li", "https://www.geo.tv/category/sports"))
 		health = Scraper.ImportHeadlines("div.card", "https://edition.cnn.com/health")
+		DataStructures.AppendList(health, geonews.ImportHeadlines("div.list ul li", "https://www.geo.tv/category/health"))
 	}
 
 	updateHeadlines()

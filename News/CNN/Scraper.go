@@ -13,7 +13,9 @@ func ImportHeadlines(element string, address string) *DataStructures.LinkedList 
 	var urls []string
 	var descriptions []string
 	var uniqueUrls = make(map[string]bool)
-	collector := colly.NewCollector()
+	collector := colly.NewCollector(
+		colly.IgnoreRobotsTxt(), // Ignore robots.txt
+	)
 	collector.OnHTML(element, func(e *colly.HTMLElement) {
 		isFound := false
 		desc := e.DOM.Find("span.container__headline-text").Text()
