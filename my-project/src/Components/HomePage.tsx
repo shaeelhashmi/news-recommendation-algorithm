@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 interface props{
     Sort: any
+    getSource: any
 }
 export default function HomePage(props:props) {
   const navigate = useNavigate();
@@ -91,7 +92,7 @@ export default function HomePage(props:props) {
        >
        {data.map((post,index) => (
         <div key={index}>
-        <NewsCard image={post.Img} link={post.Links} description={post.Description} type={post.category}/>
+        <NewsCard image={post.Img} link={post.Links} description={post.Description} type={post.category} Source={props.getSource(post.Links)}/>
         </div>
        ))}
        </InfiniteScroll>

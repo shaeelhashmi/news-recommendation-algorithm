@@ -9,6 +9,7 @@ interface props{
     description:String;
     link:string
     type?:string
+    Source:string
 }
 export default function NewsCard(props:props) {
   return (
@@ -21,6 +22,7 @@ export default function NewsCard(props:props) {
             )}
         </div>
         <div className="w-full h-[80px]  text-sm font-thin p-2">{props.description}</div>
+        <p className="mx-2 font-sans font-light">Source: {props.Source}</p>
         <div className="flex items-center justify-end w-full">
             <a className="w-[150px] h-[40px] bg-blue-600 m-3  hover:bg-blue-500 duration-500 transition-all cursor-pointer flex items-center justify-center text-white" href={props.link} target="_blank"
             onClick={()=>{
@@ -30,6 +32,7 @@ export default function NewsCard(props:props) {
                 },{withCredentials:true})
             }}>View details</a>
         </div>
+
     </div>
   )
 }

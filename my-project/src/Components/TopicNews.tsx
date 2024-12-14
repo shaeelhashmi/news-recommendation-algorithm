@@ -89,7 +89,7 @@ useEffect(() => {
        >
        {data.map((post,index) => (
         <div key={index}>
-        <NewsCard image={post.Img} link={post.Links} description={post.Description} type={topic}/>
+        <NewsCard image={post.Img} link={post.Links} description={post.Description} type={topic} Source={props.getSource(post.Links)}/>
         </div>
        ))}
        </InfiniteScroll>

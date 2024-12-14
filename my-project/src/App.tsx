@@ -17,12 +17,16 @@ function App() {
 
     return [...sortDescriptions(left), ...middle, ...sortDescriptions(right)];
   };
+  const getSource = (description: string) => {
+    if (description.includes('cnn'))return 'CNN';
+    if (description.includes('geo'))return 'Geo News';
+  }
 
   return (
     <Router>
     <Routes>
-    <Route path='/' element={<HomePage  Sort={sortDescriptions}/>}></Route>
-    <Route path='/:topic' element={<TopicNews  Sort={sortDescriptions}/>}></Route>
+    <Route path='/' element={<HomePage  Sort={sortDescriptions} getSource={getSource}/>}></Route>
+    <Route path='/:topic' element={<TopicNews  Sort={sortDescriptions} getSource={getSource}/>}></Route>
     <Route path='/auth/login' element={<Login></Login>}></Route>
     <Route path='/auth/signup' element={<Signup></Signup>}></Route>
     <Route path='/setting' element={<Settings></Settings>}></Route>
