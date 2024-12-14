@@ -1,11 +1,13 @@
 
 import './App.css'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import Navbar from './Components/Navbar/Navbar'
 import TopicNews from './Components/TopicNews'
 import Login from './Components/Auth/Login'
 import Signup from './Components/Auth/Signup'
 import Settings from './Components/Settings/Settings'
 import HomePage from './Components/HomePage'
+import NotFound from './Components/404pages'
 function App() {
   const sortDescriptions:any = (arr: any[]) => {
     if (arr.length <= 1) return arr;
@@ -25,11 +27,14 @@ function App() {
   return (
     <Router>
     <Routes>
-    <Route path='/' element={<HomePage  Sort={sortDescriptions} getSource={getSource}/>}></Route>
-    <Route path='/:topic' element={<TopicNews  Sort={sortDescriptions} getSource={getSource}/>}></Route>
+    <Route path='/' element={<><Navbar></Navbar><HomePage  Sort={sortDescriptions} getSource={getSource}/></>}></Route>
+    <Route path='/:topic' element={<>
+    <Navbar></Navbar>
+    <TopicNews  Sort={sortDescriptions} getSource={getSource}/></>}></Route>
     <Route path='/auth/login' element={<Login></Login>}></Route>
     <Route path='/auth/signup' element={<Signup></Signup>}></Route>
     <Route path='/setting' element={<Settings></Settings>}></Route>
+    <Route path='*' element={<NotFound></NotFound>}></Route>
 
     </Routes>
     </Router>

@@ -51,7 +51,7 @@ export default function SideBar() {
   return (
     <>
     <div className="sticky flex flex-row justify-between pl-8 text-white xl:hidden sm:top-14 top-10 bg-[#2a17a4] h-11 w-full">
-           <div>More</div><button className="mr-[3.8rem]" onClick={()=>{
+           <div></div><button className="mr-[3.8rem]" onClick={()=>{
             setShow(!show)
            }}><MenuBtn></MenuBtn></button>
       </div>

@@ -4,7 +4,6 @@ import Loader from './Loader/Loader';
 import InfiniteScrollLoader from './Loader/InfiniteScrollLoader';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useSelector } from 'react-redux';
-import Navbar from './Navbar/Navbar';
 import { useNavigate } from 'react-router-dom';
 
 import axios from 'axios';
@@ -81,7 +80,6 @@ export default function HomePage(props:props) {
   return (
     loader?<Loader></Loader>:
     <>
-    <Navbar></Navbar>
     <div >
     <InfiniteScroll
        dataLength={data.length}

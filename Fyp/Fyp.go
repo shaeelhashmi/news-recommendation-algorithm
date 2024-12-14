@@ -190,6 +190,11 @@ func Fyp(w http.ResponseWriter, r *http.Request, world, business, entertainment,
 		var selected []DataStructures.Fyppage
 		for i := 0; i < 5; i++ {
 			if IsSame(weightArray) {
+				if selected != nil {
+					selected = randomSort(selected)
+					response = append(response, selected...)
+					selected = nil
+				}
 				for _, item := range weightArray {
 					switch item.category {
 					case "world":
