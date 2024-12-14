@@ -89,17 +89,17 @@ func main() {
 		}
 		var jsonResponse JsonResponse
 		if endUrl == "world" {
-			jsonResponse = JsonResponse{Headlines: DataStructures.GetResponse(world)}
+			jsonResponse = JsonResponse{Headlines: DataStructures.RandomSort(DataStructures.GetResponse(world))}
 		} else if endUrl == "business" {
-			jsonResponse = JsonResponse{Headlines: DataStructures.GetResponse(business)}
+			jsonResponse = JsonResponse{Headlines: DataStructures.RandomSort(DataStructures.GetResponse(business))}
 		} else if endUrl == "entertainment" {
-			jsonResponse = JsonResponse{Headlines: DataStructures.GetResponse(entertainment)}
+			jsonResponse = JsonResponse{Headlines: DataStructures.RandomSort(DataStructures.GetResponse(entertainment))}
 		} else if endUrl == "science" {
-			jsonResponse = JsonResponse{Headlines: DataStructures.GetResponse(science)}
+			jsonResponse = JsonResponse{Headlines: DataStructures.RandomSort(DataStructures.GetResponse(science))}
 		} else if endUrl == "sports" {
-			jsonResponse = JsonResponse{Headlines: DataStructures.GetResponse(sports)}
+			jsonResponse = JsonResponse{Headlines: DataStructures.RandomSort(DataStructures.GetResponse(sports))}
 		} else if endUrl == "health" {
-			jsonResponse = JsonResponse{Headlines: DataStructures.GetResponse(health)}
+			jsonResponse = JsonResponse{Headlines: DataStructures.RandomSort(DataStructures.GetResponse(health))}
 		} else {
 			w.WriteHeader(http.StatusNotFound)
 			w.Write([]byte("404 page not found"))

@@ -1,5 +1,9 @@
 package DataStructures
 
+import (
+	"math/rand"
+)
+
 type Fyppage struct {
 	Data     Response
 	Category string
@@ -82,6 +86,13 @@ func Remove(list *LinkedList, idx int) {
 		}
 		list.Tail = temp
 	}
+}
+func RandomSort(list []Response) []Response {
+	for i := len(list) - 1; i > 0; i-- {
+		j := rand.Intn(i + 1)
+		list[i], list[j] = list[j], list[i]
+	}
+	return list
 }
 func AppendList(list *LinkedList, value *LinkedList) {
 	if list.Head == nil {
