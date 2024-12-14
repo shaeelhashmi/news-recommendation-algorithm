@@ -8,7 +8,7 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import { useSelector } from 'react-redux';
 import Search from "./SVG/Search";
 import NotFound from './404pages';
-
+import Fuse from 'fuse.js';
 export default function TopicNews(props: any) {
   const navigate = useNavigate();
   const selector = useSelector((state: any) => state.SortState.sort);
@@ -20,6 +20,7 @@ export default function TopicNews(props: any) {
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [sortData, setSortData] = useState<any[]>([]);
   const [error, setError] = useState<boolean>(false);
+  const [search, setSearch] = useState<string>('');
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -72,8 +73,9 @@ export default function TopicNews(props: any) {
 
   const fetchMore = () => {
     const newData = [...data];
-    for (let i = idx; i < idx + 4 && i < posts.length; i++) {
-      newData.push(posts[i]);
+    const source = selector ? sortData : posts;
+    for (let i = idx; i < idx + 4 && i < source.length; i++) {
+      newData.push(source[i]);
     }
     setData(newData);
     setIdx(idx + 4);
@@ -88,39 +90,68 @@ export default function TopicNews(props: any) {
       <>
         <div className="flex items-center justify-center mt-28">
           
-            <form onSubmit={(e) => {
-              e.preventDefault();
-              const search= e.currentTarget.search.value.trim();
-          navigate(`/${topic}/search?search=${encodeURIComponent(search)}`);
-            }} className="flex items-center justify-center">
-            <button className="flex items-center justify-center w-10 h-10 transition-all duration-500 ease-in-out border-2 border-green-700 hover:bg-green-700">
-          <Search></Search>
-          </button>
+        <form onSubmit={(e:any)=>{e.preventDefault()
+          setSearch(e.target.search.value)
+             if (search === '') {
+              setData(posts);
+              return;
+            }
+            const fuse = new Fuse(posts, {
+              keys: ['Description'],
+              threshold: 0.3,
+            });
+            const data = fuse.search(search).map(({ item }) => item);
+            setData(data);
+            setData(data);
+          }} className="flex items-center justify-center">
+            <button className="p-2 text-white bg-green-700 " ><Search></Search></button>
           <input
-      type="text"
-      placeholder="Search"
-      className="w-[200px] h-10 border-2 border-green-700 p-2"
-      name='search'
-
+          type="text"
+          placeholder="Search"
+          className="w-[200px] h-10 border-2 border-green-700 p-2"
+          name='search'
+        onBlur={(e:any) =>{ 
+          setSearch('')
+          e.target.value=''
+          if(selector){
+            setData(sortData)
+            return
+          }
+          setData(posts)
+        }}
     />
     </form>
       
           </div>
-          <div ></div>
+   
         <div>
-          <InfiniteScroll
-            dataLength={data.length}
-            next={fetchMore}
-            hasMore={hasMore}
-            loader={<InfiniteScrollLoader />}
-            className="grid lg:w-[80vw] w-screen grid-cols-1 lg:grid-cols-2 justify-items-center justify-center lg:ml-48 ml-0"
-          >
-            {data.map((post, index) => (
-              <div key={index}>
-                <NewsCard image={post.Img} link={post.Links} description={post.Description} type={topic} Source={props.getSource(post.Links)} />
-              </div>
-            ))}
-          </InfiniteScroll>
+          {
+             search!==''?
+             (
+             data.length===0?
+             <div className='col-span-2 mx-auto mt-32 text-4xl font-bold w-96'>No results found</div>
+             :<div className="grid justify-center lg:w-[80vw] w-screen grid-cols-1 ml-0 lg:grid-cols-2 justify-items-center lg:ml-48 " >
+             {data.map((post,index) => (
+               <div key={index}>
+               <NewsCard image={post.Img} link={post.Links} description={post.Description} type={post.category} Source={props.getSource(post.Links)}/>
+               </div>
+             ))}
+             </div>
+             )
+             :<InfiniteScroll
+                dataLength={data.length}
+                next={fetchMore}
+                hasMore={hasMore}
+                loader={<InfiniteScrollLoader></InfiniteScrollLoader>}
+                className="grid justify-center lg:w-[80vw] w-screen grid-cols-1 ml-0 lg:grid-cols-2 justify-items-center lg:ml-48 " 
+                >
+                {data.map((post,index) => (
+                 <div key={index}>
+                 <NewsCard image={post.Img} link={post.Links} description={post.Description} type={post.category} Source={props.getSource(post.Links)}/>
+                 </div>
+                ))}
+                </InfiniteScroll>
+         }
         </div>
       </>
   );
