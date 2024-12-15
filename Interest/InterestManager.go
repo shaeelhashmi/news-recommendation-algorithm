@@ -37,8 +37,15 @@ func InterestManage(w http.ResponseWriter, r *http.Request, store *sessions.Cook
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		if !auth.CheckSessionExists(w, r, store) {
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		session, err := store.Get(r, "user-session")
+		if err != nil {
+			w.WriteHeader(http.StatusUnauthorized)
+			w.Write([]byte("Session not found"))
+			return
+		}
+		if session.Values["username"] == nil {
+			w.WriteHeader(http.StatusUnauthorized)
+			w.Write([]byte("Session not found"))
 			return
 		}
 		username := sessions.Values["username"]
