@@ -108,38 +108,37 @@ export default function TopicNews(props: any) {
        placeholder="Search"
        className="w-[200px] h-10 border-2 border-green-700 p-2"
        name='search'
-       onChange={(e:any) => {setSearch(e.target.value)
-         if (e.target.value === '') {
-           setData(posts);
-           return;
-         }
-         const fuse = new Fuse(posts, {
-           keys: ['Description'],
-           threshold: 0.3,
-         });
-         const data = fuse.search(e.target.value).map(({ item }) => item);
-         setThirdData(data);
-         const newData = [];
-         for (let i = 0; i < idx && i < data.length; i++) {
-           newData.push(data[i]);
-         }
-         setData(newData);
-         setIdx(4);
-         setHasMore(idx<thirdData.length);
+       onChange={(e:any) => {
+        if (search === '' && e.target.value.trim() === '') {
+          return;
+        }
+        setSearch(e.target.value);
+        if (e.target.value === '') {
+
+          setIdx(4);
+          setHasMore(idx<posts.length);
+          const newData = [];
+          for (let i = 0; i < 4 && i < posts.length; i++) {
+            newData.push(posts[i]);
+          }
+          setData(newData);
+          return;
+        }
+        const fuse = new Fuse(posts, {
+          keys: ['Description'],
+          threshold: 0.3,
+        });
+        const data = fuse.search(e.target.value).map(({ item }) => item);
+        setThirdData(data);
+        const newData = [];
+        for (let i = 0; i < idx && i < data.length; i++) {
+          newData.push(data[i]);
+        }
+        setData(newData);
+        setIdx(4);
+        setHasMore(idx<thirdData.length);
        }}
-     onBlur={(e:any) =>{
-       window.scrollTo({ top: 0, behavior: 'smooth' });
-       setSearch('')
-       e.target.value=''
-       const source = selector ? sortData : posts;
-       const newData = [];
-       for (let i = 0; i < 4 && i < source.length; i++) {
-         newData.push(source[i]);
-       }
-       setIdx(4);
-       setData(newData);
-       setHasMore(idx<posts.length);
-     }}
+       value={search}
  />      
  </div>
         <InfiniteScroll

@@ -9,15 +9,37 @@ import Settings from './Components/Settings/Settings'
 import HomePage from './Components/HomePage'
 import NotFound from './Components/404pages'
 function App() {
+  const RemovePunctuation = (str: string): string => {
+   for (let i = 0; i < str.length; i++) {
+    if (str[i] === '.' || str[i] === ',' || str[i] === '!' || str[i] === '?' || str[i] === ':' || str[i] === ';' || str[i] === '"' || str[i] === "'") {
+      str = str.slice(0, i) + str.slice(i + 1);
+      i--;
+    }
+  }
+    return str;
+  }
+  const merge = (left: any[], right: any[]) => {
+    let resultArray = [], leftIndex = 0, rightIndex = 0;
+    while (leftIndex < left.length && rightIndex < right.length) {
+      if (RemovePunctuation(left[leftIndex].Description) < RemovePunctuation(right[rightIndex].Description)) {
+        resultArray.push(left[leftIndex]);
+        leftIndex++;
+      } else {
+        resultArray.push(right[rightIndex]);
+        rightIndex++;
+      }
+    }
+    return resultArray
+            .concat(left.slice(leftIndex))
+            .concat(right.slice(rightIndex));
+  }
   const sortDescriptions:any = (arr: any[]) => {
     if (arr.length <= 1) return arr;
+    const middle = Math.floor(arr.length / 2);
+    const left = sortDescriptions(arr.slice(0, middle));
+    const right = sortDescriptions(arr.slice(middle));
 
-    const pivot = arr[Math.floor(arr.length / 2)].Description;
-    const left = arr.filter(item => item.Description < pivot);
-    const right = arr.filter(item => item.Description > pivot);
-    const middle = arr.filter(item => item.Description === pivot);
-
-    return [...sortDescriptions(left), ...middle, ...sortDescriptions(right)];
+    return merge(left, right);
   };
   const getSource = (description: string) => {
     if (description.includes('cnn'))return 'CNN';

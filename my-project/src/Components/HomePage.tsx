@@ -104,9 +104,20 @@ export default function HomePage(props:props) {
           placeholder="Search"
           className="w-[200px] h-10 border-2 border-green-700 p-2"
           name='search'
-          onChange={(e:any) => {setSearch(e.target.value)
+          onChange={(e:any) => {
+            if (search === '' && e.target.value.trim() === '') {
+              return;
+            }
+            setSearch(e.target.value);
             if (e.target.value === '') {
-              setData(posts);
+
+              setIdx(4);
+              setHasMore(idx<posts.length);
+              const newData = [];
+              for (let i = 0; i < 4 && i < posts.length; i++) {
+                newData.push(posts[i]);
+              }
+              setData(newData);
               return;
             }
             const fuse = new Fuse(posts, {
@@ -123,19 +134,20 @@ export default function HomePage(props:props) {
             setIdx(4);
             setHasMore(idx<thirdData.length);
           }}
-        onBlur={(e:any) =>{
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-          setSearch('')
-          e.target.value=''
-          const source = selector ? sortData : posts;
-          const newData = [];
-          for (let i = 0; i < 4 && i < source.length; i++) {
-            newData.push(source[i]);
-          }
-          setIdx(4);
-          setData(newData);
-          setHasMore(idx<posts.length);
-        }}
+          value={search}
+        // onBlur={(e:any) =>{
+        //   window.scrollTo({ top: 0, behavior: 'smooth' });
+        //   setSearch('')
+        //   e.target.value=''
+        //   const source = selector ? sortData : posts;
+        //   const newData = [];
+        //   for (let i = 0; i < 4 && i < source.length; i++) {
+        //     newData.push(source[i]);
+        //   }
+        //   setIdx(4);
+        //   setData(newData);
+        //   setHasMore(idx<posts.length);
+        // }}
     />      
     </div>
     <div >
