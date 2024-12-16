@@ -26,10 +26,17 @@ func ImportHeadlines(element string, address string) *DataStructures.LinkedList 
 			if exists {
 				urls = append(urls, url)
 			}
-			src, exists := e.DOM.Find("img").Attr("src")
+			src, exists := e.DOM.Find("img").Attr("data-src")
 			if exists {
 				images = append(images, DataStructures.Image{Src: src, IsVideo: false})
 				isFound = true
+			}
+			if !isFound {
+				src, exists = e.DOM.Find("img").Attr("src")
+				if exists {
+					images = append(images, DataStructures.Image{Src: src, IsVideo: false})
+					isFound = true
+				}
 			}
 			src, exists = e.DOM.Find("video source").Attr("src")
 			if exists {
