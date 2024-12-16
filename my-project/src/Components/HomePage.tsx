@@ -22,6 +22,7 @@ export default function HomePage(props:props) {
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [sortData, setSortData] = useState<any[]>([]);
   const [search, setSearch] = useState<string>('');
+  const [thirdData, setThirdData] = useState<any[]>([]);
   useEffect(() => {
   
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -70,6 +71,17 @@ export default function HomePage(props:props) {
     }
     }, []);
     const fetchMore = () => {
+      if(search!==''){
+        const newData = [...data];
+        const source =  thirdData;
+        for (let i = idx; i < idx + 4 && i < source.length; i++) {
+          newData.push(source[i]);
+        }
+        setData(newData);
+        setIdx(idx + 4);
+        setHasMore(idx<thirdData.length);
+        return
+      }
       const newData = [...data];
       const source=selector?sortData:posts;
       for (let i = idx; i < idx + 4 && i < source.length; i++) {
@@ -85,9 +97,15 @@ export default function HomePage(props:props) {
     loader?<Loader></Loader>:
     <>
        <div className="flex items-center justify-center mt-28">    
-          <form onSubmit={(e:any)=>{e.preventDefault()
-          setSearch(e.target.search.value)
-             if (search === '') {
+         
+            <span className="p-2 text-white bg-green-700 " ><Search></Search></span>
+          <input
+          type="text"
+          placeholder="Search"
+          className="w-[200px] h-10 border-2 border-green-700 p-2"
+          name='search'
+          onChange={(e:any) => {setSearch(e.target.value)
+            if (e.target.value === '') {
               setData(posts);
               return;
             }
@@ -95,45 +113,34 @@ export default function HomePage(props:props) {
               keys: ['Description'],
               threshold: 0.3,
             });
-            const data = fuse.search(search).map(({ item }) => item);
-            setData(data);
-          }} className="flex items-center justify-center">
-            <button className="p-2 text-white bg-green-700 " ><Search></Search></button>
-          <input
-          type="text"
-          placeholder="Search"
-          className="w-[200px] h-10 border-2 border-green-700 p-2"
-          name='search'
-        onBlur={(e:any) =>{ 
+            const data = fuse.search(e.target.value).map(({ item }) => item);
+            setThirdData(data);
+            const newData = [];
+            for (let i = 0; i < idx && i < data.length; i++) {
+              newData.push(data[i]);
+            }
+            setData(newData);
+            setIdx(4);
+            setHasMore(idx<thirdData.length);
+          }}
+        onBlur={(e:any) =>{
+          window.scrollTo({ top: 0, behavior: 'smooth' });
           setSearch('')
           e.target.value=''
           const source = selector ? sortData : posts;
           const newData = [];
-          for (let i = 0; i < idx && i < source.length; i++) {
+          for (let i = 0; i < 4 && i < source.length; i++) {
             newData.push(source[i]);
           }
+          setIdx(4);
           setData(newData);
+          setHasMore(idx<posts.length);
         }}
-    />
-    </form>
-
-      
-          </div>
-    <div >
-    {
-    search!==''?
-    (
-    data.length===0?
-    <div className='col-span-2 mx-auto mt-32 text-4xl font-bold w-96'>No results found</div>
-    :<div className="grid justify-center lg:w-[80vw] w-screen grid-cols-1 ml-0 lg:grid-cols-2 justify-items-center lg:ml-48 " >
-    {data.map((post,index) => (
-      <div key={index}>
-      <NewsCard image={post.Img} link={post.Links} description={post.Description} type={post.category} Source={props.getSource(post.Links)}/>
-      </div>
-    ))}
+    />      
     </div>
-    )
-    :<InfiniteScroll
+    <div >
+    
+    <InfiniteScroll
        dataLength={data.length}
        next={fetchMore}
        hasMore={hasMore}
@@ -146,7 +153,7 @@ export default function HomePage(props:props) {
         </div>
        ))}
        </InfiniteScroll>
-}
+
    </div>
    </>
   )
