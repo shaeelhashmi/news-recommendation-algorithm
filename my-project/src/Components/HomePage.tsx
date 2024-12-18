@@ -55,12 +55,12 @@ export default function HomePage(props:props) {
         setPosts(result.data.fyp);
         const newData = [];
         const sortedPosts = props.Sort([...result.data.fyp]);
-        for (let i = idx; i < idx + 4 && i < result.data.fyp.length; i++) {
+        for (let i = idx; i < idx + 6 && i < result.data.fyp.length; i++) {
           newData.push(result.data.fyp[i]);
         }
         setData(newData);
         setSortData(sortedPosts);
-        setIdx(idx + 4);
+        setIdx(idx + 6);
         setLoader(false);
       };
      fetchData();
@@ -72,17 +72,17 @@ export default function HomePage(props:props) {
       if(search!==''){
         const newData = [...data];
         const source =  thirdData;
-        for (let i = idx; i < idx + 4 && i < source.length; i++) {
+        for (let i = idx; i < idx + 6 && i < source.length; i++) {
           newData.push(source[i]);
         }
         setData(newData);
-        setIdx(idx + 4);
+        setIdx(idx + 6);
         setHasMore(idx<thirdData.length);
         return
       }
       const newData = [...data];
       const source=selector?sortData:posts;
-      for (let i = idx; i < idx + 4 && i < source.length; i++) {
+      for (let i = idx; i < idx + 6 && i < source.length; i++) {
         newData.push(source[i]);
       }
       setData(newData);
@@ -109,14 +109,16 @@ export default function HomePage(props:props) {
             setSearch(e.target.value);
             if (e.target.value === '') {
 
-              setIdx(4);
-              setHasMore(idx<posts.length);
+              setIdx(6);
+              
               const newData = [];
-              for (let i = 0; i < 4 && i < posts.length; i++) {
+              for (let i = 0; i < 6 && i < posts.length; i++) {
                 newData.push(posts[i]);
               }
               setData(newData);
+              setHasMore(idx<posts.length);
               return;
+
             }
             const fuse = new Fuse(posts, {
               keys: ['Description'],
@@ -125,11 +127,11 @@ export default function HomePage(props:props) {
             const data = fuse.search(e.target.value).map(({ item }) => item);
             setThirdData(data);
             const newData = [];
-            for (let i = 0; i < idx && i < data.length; i++) {
+            for (let i = 0; i < 6 && i < data.length; i++) {
               newData.push(data[i]);
             }
             setData(newData);
-            setIdx(4);
+            setIdx(6<data.length?6:data.length);
             setHasMore(idx<thirdData.length);
           }}
           value={search}

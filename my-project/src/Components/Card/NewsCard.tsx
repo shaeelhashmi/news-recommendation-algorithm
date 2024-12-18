@@ -13,7 +13,7 @@ interface props{
 }
 export default function NewsCard(props:props) {
   return (
-    <div className="w-[250px]  h-[450px] bg-[#E0E0E0] m-8 mt-20 ">
+    <div className="w-[250px]  h-[450px] bg-white border-2 border-solid shadow-lg m-8 mt-20 ">
         <div className="w-full h-[50%] m-0">
             {props.image.IsVideo ? (
           <video src={props.image.Src === '' ? images : props.image.Src} className="object-cover w-full h-full" controls />

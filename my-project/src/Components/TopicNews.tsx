@@ -56,12 +56,12 @@ export default function TopicNews(props: any) {
         setPosts(result.data.News);
         const newData = [];
         const sortedPosts = props.Sort([...result.data.News]);
-        for (let i = idx; i < idx + 4 && i < result.data.News.length; i++) {
+        for (let i = idx; i < idx + 6 && i < result.data.News.length; i++) {
           newData.push(result.data.News[i]);
         }
         setData(newData);
         setSortData(sortedPosts);
-        setIdx(idx + 4);
+        setIdx(idx + 6);
         setLoader(false);
       } catch (e) {
         setError(true);
@@ -73,21 +73,21 @@ export default function TopicNews(props: any) {
     if(search!==''){
       const newData = [...data];
       const source =  thirdData;
-      for (let i = idx; i < idx + 4 && i < source.length; i++) {
+      for (let i = idx; i < idx + 6 && i < source.length; i++) {
         newData.push(source[i]);
       }
       setData(newData);
-      setIdx(idx + 4);
+      setIdx(idx + 6);
       setHasMore(idx<thirdData.length);
       return
     }
     const newData = [...data];
     const source=selector?sortData:posts;
-    for (let i = idx; i < idx + 4 && i < source.length; i++) {
+    for (let i = idx; i < idx + 6 && i < source.length; i++) {
       newData.push(source[i]);
     }
     setData(newData);
-    setIdx(idx + 4);
+    setIdx(idx + 6);
     setHasMore(idx<posts.length);
 
   };
@@ -113,12 +113,13 @@ export default function TopicNews(props: any) {
         setSearch(e.target.value);
         if (e.target.value === '') {
 
-          setIdx(4);
+          
           setHasMore(idx<posts.length);
           const newData = [];
-          for (let i = 0; i < 4 && i < posts.length; i++) {
+          for (let i = 0; i < 6 && i < posts.length; i++) {
             newData.push(posts[i]);
           }
+          setIdx(6);
           setData(newData);
           return;
         }
@@ -129,11 +130,11 @@ export default function TopicNews(props: any) {
         const data = fuse.search(e.target.value).map(({ item }) => item);
         setThirdData(data);
         const newData = [];
-        for (let i = 0; i < idx && i < data.length; i++) {
+        for (let i = 0; i < 6 && i < data.length; i++) {
           newData.push(data[i]);
         }
         setData(newData);
-        setIdx(4);
+        setIdx(6<data.length?6:data.length);
         setHasMore(idx<thirdData.length);
        }}
        value={search}
