@@ -5,7 +5,7 @@ export default function Navbar() {
   const dispatch = useDispatch()
   return (
     <>
-    <nav className={`fixed top-0 w-full p-3 bg-[#2a17a4] flex flex-col font-serif text-white xl:h-14 `}>
+    <nav className={`fixed top-0 w-full p-3 bg-[#20194a] flex flex-col font-serif text-white xl:h-14 `}>
     <div className="flex flex-row justify-between w-full ">
       <div>
     <h1 className="ml-4 text-xl sm:mx-4 sm:text-2xl xl:mr-5 sm:ml-0">News Master</h1>
@@ -16,7 +16,7 @@ export default function Navbar() {
     }} />
     <span className="sm:ml-5">Sort A-Z</span>
   
-  <button className="bg-blue-700 sm:w-[150px] h-[30px]  hover:bg-blue-800 mx-5 transition-all duration-500 rounded-sm w-[60px]" onClick={async()=>{
+  <button className="bg-blue-900 sm:w-[120px] h-[30px]  hover:bg-blue-800 mx-5 transition-all duration-500 rounded-sm w-[60px]" onClick={async()=>{
    try{
      await axios.get('http://localhost:8080/logout',{withCredentials:true});
     location.reload()

@@ -26,13 +26,12 @@ export default function Settings() {
                 setError  ("username changed to "+username);
             }
         }catch(error:any){
-          console.error(error.response?.data);
-          console.log(error);
+          
             if(axios.isAxiosError(error) && error.response?.status===409){
                 setError("Username already exists");
             }
             else{
-              console.log(error);
+             
                 setError("Internal server error");
             }
             return;

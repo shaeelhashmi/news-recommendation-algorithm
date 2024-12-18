@@ -45,9 +45,7 @@ export default function HomePage(props:props) {
       try{
         await axios.get(("http://localhost:8080/checklogin"),{withCredentials:true});
       }catch(error:any){
-        if(error.response.status===401){
-          navigate("/auth/login");
-      }
+        navigate('/auth/login')
     }
   }
     checkLogin();
@@ -96,7 +94,7 @@ export default function HomePage(props:props) {
   return (
     loader?<Loader></Loader>:
     <>
-       <div className="flex items-center justify-center mt-28">    
+       <div className="flex items-center justify-center mt-28 lg:ml-[180px] ml-0">    
          
             <span className="p-2 text-white bg-green-700 " ><Search></Search></span>
           <input
@@ -135,19 +133,6 @@ export default function HomePage(props:props) {
             setHasMore(idx<thirdData.length);
           }}
           value={search}
-        // onBlur={(e:any) =>{
-        //   window.scrollTo({ top: 0, behavior: 'smooth' });
-        //   setSearch('')
-        //   e.target.value=''
-        //   const source = selector ? sortData : posts;
-        //   const newData = [];
-        //   for (let i = 0; i < 4 && i < source.length; i++) {
-        //     newData.push(source[i]);
-        //   }
-        //   setIdx(4);
-        //   setData(newData);
-        //   setHasMore(idx<posts.length);
-        // }}
     />      
     </div>
     <div >
@@ -157,7 +142,7 @@ export default function HomePage(props:props) {
        next={fetchMore}
        hasMore={hasMore}
        loader={<InfiniteScrollLoader></InfiniteScrollLoader>}
-       className="grid justify-center lg:w-[80vw] w-screen grid-cols-1 ml-0 lg:grid-cols-2 justify-items-center lg:ml-48 " 
+       className="grid justify-center lg:w-[calc(99vw-180px)] w-screen grid-cols-1 ml-0 lg:grid-cols-3 md:grid-cols-2 justify-items-center lg:ml-[180px] " 
        >
        {data.map((post,index) => (
         <div key={index}>

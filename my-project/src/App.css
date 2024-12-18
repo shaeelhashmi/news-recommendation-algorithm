@@ -1,41 +1,6 @@
 body{
   overflow-x: hidden;
 }
-
-  @media screen and (min-width: 1200px) {
-/* Style the scrollbar track */
-.sidebar::-webkit-scrollbar {
-  width: 8px; /* Set the scrollbar width */
-}
-
-.sidebar::-webkit-scrollbar-track {
-  background: #2a17a4; /* Background of the scrollbar track */
-}
-
-.sidebar::-webkit-scrollbar-thumb {
-  background-color: #888; /* Color of the scrollbar thumb */
-  border-radius: 4px; /* Round edges of the scrollbar thumb */
-}
-
-.sidebar::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
-
-/* Firefox scrollbar styles */
-.sidebar {
-  scrollbar-width: thin; /* Use a thin scrollbar */
-  scrollbar-color: #888 #2a17a4; /* Thumb color and track color */
-}
-.sidebar::-webkit-scrollbar {
-  width: 0; /* Hide the scrollbar */
-  height: 0; /* Hide the scrollbar for horizontal scrolling */
-}
-
-.sidebar {
-  scrollbar-width: none; /* Hide scrollbar for Firefox */
-  -ms-overflow-style: none; /* Hide scrollbar for Internet Explorer/Edge */
-}
-  }
   .card {
     overflow: hidden;
     position: relative;

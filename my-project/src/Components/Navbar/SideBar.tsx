@@ -50,12 +50,14 @@ export default function SideBar() {
  
   return (
     <>
-    <div className="sticky flex flex-row justify-between pl-8 text-white xl:hidden sm:top-14 top-10 bg-[#2a17a4] h-11 w-full">
-           <div></div><button className="mr-[3.8rem]" onClick={()=>{
+    <div className="sticky flex flex-row justify-between pl-8 text-white lg:hidden sm:top-14 top-10  bg-[#20194a] xl:bg-[#322586] h-16 w-full">
+           <div></div>
+           <button className="mr-[2rem]" onClick={()=>{
             setShow(!show)
            }}><MenuBtn></MenuBtn></button>
       </div>
-    <aside className={`fixed xl:top-14 sm:top-24 top-20 left-0 xl:w-[250px] xl:h-screen bg-[#2a17a4]  flex flex-col text-white overflow-auto pl-8 sidebar w-full ${show?'h-72':'h-0'} duration-500 transition-all overflow-x-hidden`}>  
+    <aside className={`fixed sm:top-28 top-24 lg:top-14 left-0 lg:w-[180px] lg:h-screen bg-[#090622]  flex flex-col text-white overflow-auto pl-4  w-full ${show?'h-72':'h-0'} duration-500 transition-all overflow-x-hidden`}   
+    >  
       <div>
       {links.map((link, index) => {
         return <NavLinks key={index} link={link.URL} text={link.Text}  ></NavLinks>

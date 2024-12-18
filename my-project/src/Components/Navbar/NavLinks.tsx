@@ -15,7 +15,7 @@ export default function NavLinks(props:NavLinksProps) {
       <div className={`font-serif w-full ml-2 `}>
         {props.link?<a href={formatLink(props.link)}>{props.text}</a>:<span>{props.text}</span>}
         </div>
-     <div className={`w-full h-2 bg-black opacity-15 ${hover?'scale-100':'scale-0'} duration-500 transition-all my-3`}></div>
+     <div className={`w-full h-1 bg-white opacity-15 ${hover?'scale-100':'scale-0'} duration-500 transition-all my-3`}></div>
       </div>
 
     </>
