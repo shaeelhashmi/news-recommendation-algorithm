@@ -70,7 +70,7 @@ popup && <div className="fixed top-0 left-0 z-50 flex items-center justify-cente
                 <input type="password" name="password" id="password" className="w-[80%] p-2 border-2 border-solid mx-auto rounded-sm my-2" placeholder="Password"/>
                 <p className="h-6 text-red-600">{passwordError}</p>
                 <button className="w-[80%] h-[40px] p-1 text-white bg-red-600  hover:bg-red-700 duration-500 transition-all mx-auto my-2 rounded-md" type="submit">Delete</button>
-                <button className="w-[80%] h-[40px] p-1 text-black bg-slate-300  hover:bg-slate-200 duration-500 transition-all mx-auto my-2 rounded-md" type="submit" onClick={()=>{
+                <button className="w-[80%] h-[40px] p-1 text-black bg-white border-2 border-solid border-[#0000001b] duration-500 transition-all mx-auto my-2 rounded-md" type="submit" onClick={()=>{
                     setSecondPopup(false);
                 }}>Cancel</button>
             
