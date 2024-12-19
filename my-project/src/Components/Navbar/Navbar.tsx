@@ -11,11 +11,12 @@ export default function Navbar() {
     <h1 className="ml-4 text-xl sm:mx-4 sm:text-2xl xl:mr-5 sm:ml-0">News Master</h1>
     </div>
   <div  className="flex flex-row items-center">
-    <input type="checkbox" name="sortOption" onClick={(e:any) => {
+ {!(window.location.pathname === '/setting') &&   
+  <><input type="checkbox" name="sortOption" onClick={(e:any) => {
       dispatch({type:'SortState/setShow',payload:e.target.checked})
     }} />
     <span className="sm:ml-5">Sort A-Z</span>
-  
+    </>}
   <button className="bg-blue-900 sm:w-[120px] h-[30px]  hover:bg-blue-800 mx-5 transition-all duration-500 rounded-sm w-[60px]" onClick={async()=>{
    try{
      await axios.get('http://localhost:8080/logout',{withCredentials:true});

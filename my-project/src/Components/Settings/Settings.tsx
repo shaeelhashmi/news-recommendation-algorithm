@@ -83,9 +83,9 @@ export default function Settings() {
             <form  onSubmit={handlePasswordChange}>
                 <h1 className="mx-auto mt-10 text-2xl font-bold text-center">Change password</h1>
                 <label htmlFor="oldpassword" className="block my-4">Old password:</label>
-                <input type="password" name="oldpassword" id="oldpassword" className="sm:w-full w-[90%] p-2 border-2 border-solid" />
+                <input type="password" name="oldpassword" id="oldpassword" className="border-[#00000048] sm:w-full w-[90%] p-2 border-2 border-solid" />
                 <label htmlFor="newpassword" className="block my-4">New password:</label>
-                <input type="password" name="newpassword" id="newpassword" className="sm:w-full w-[90%] p-2 border-2 border-solid" />
+                <input type="password" name="newpassword" id="newpassword" className="border-[#00000048] sm:w-full w-[90%] p-2 border-2 border-solid" />
                 <p className="h-10 mx-auto text-red-600">{passwordError}</p>
                 <div className="flex justify-center mt-2">
              <button className="w-[100px] p-1 text-white bg-blue-600 rounded hover:bg-blue-700 duration-500 transition-all" type="submit">Change</button>
@@ -94,7 +94,7 @@ export default function Settings() {
             <form  onSubmit={handleSubmit}>
                 <h1 className="mx-auto mt-10 text-2xl font-bold text-center">Change username</h1>
                 <label htmlFor="newusername" className="block my-4">New username:</label>
-                <input type="text" name="newUsername" id="newusername" className="sm:w-full w-[90%] p-2 border-2 border-solid" value={username} onChange={(e) => {
+                <input type="text" name="newUsername" id="newusername" className="sm:w-full w-[90%] p-2 border-2 border-solid border-[#00000048]" value={username} onChange={(e) => {
         if (e.target.value.includes(" ")) {
           return;
         }

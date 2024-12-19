@@ -64,13 +64,13 @@ popup && <div className="fixed top-0 left-0 z-50 flex items-center justify-cente
     }
     {
         secondPopup && <div className="fixed top-0 left-0 z-50 flex items-center justify-center w-screen h-screen bg-[#00000070]">
-         <div className="bg-slate-200 w-[300px] h-[300px] rounded-sm flex justify-center items-center flex-col">
+         <div className="bg-white w-[300px] h-[300px] rounded-md flex justify-center items-center flex-col">
                 <h1 className="my-2 text-2xl text-center">Delete account</h1>
              <form className="flex flex-col items-center justify-center w-full" onSubmit={DeleteUser}>
-                <input type="password" name="password" id="password" className="w-[60%] p-2 border-2 border-solid mx-auto rounded-sm my-2" placeholder="Password"/>
+                <input type="password" name="password" id="password" className="w-[80%] p-2 border-2 border-solid mx-auto rounded-sm my-2" placeholder="Password"/>
                 <p className="h-6 text-red-600">{passwordError}</p>
-                <button className="w-[50%] p-1 text-white bg-red-600  hover:bg-red-700 duration-500 transition-all mx-auto my-2 rounded-sm" type="submit">Delete</button>
-                <button className="w-[50%] p-1 text-black bg-white  hover:bg-slate-100 duration-500 transition-all mx-auto my-2 rounded-sm" type="submit" onClick={()=>{
+                <button className="w-[80%] h-[40px] p-1 text-white bg-red-600  hover:bg-red-700 duration-500 transition-all mx-auto my-2 rounded-md" type="submit">Delete</button>
+                <button className="w-[80%] h-[40px] p-1 text-black bg-slate-300  hover:bg-slate-200 duration-500 transition-all mx-auto my-2 rounded-md" type="submit" onClick={()=>{
                     setSecondPopup(false);
                 }}>Cancel</button>
             
