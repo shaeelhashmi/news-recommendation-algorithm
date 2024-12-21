@@ -100,7 +100,7 @@ export default function TopicNews(props: any) {
       <>
        <div className="flex items-center justify-center mt-28 lg:ml-[180px] ml-0">    
          
-         <span className="p-2 text-white bg-green-700 " ><Search></Search></span>
+       <span className="p-2 text-white bg-green-700 " ><Search></Search></span>
        <input
        type="text"
        placeholder="Search"
@@ -119,7 +119,7 @@ export default function TopicNews(props: any) {
           for (let i = 0; i < 6 && i < posts.length; i++) {
             newData.push(posts[i]);
           }
-          setIdx(6);
+          setIdx(6<posts.length?6:posts.length);
           setData(newData);
           return;
         }
@@ -152,9 +152,7 @@ export default function TopicNews(props: any) {
                  <NewsCard image={post.Img} link={post.Links} description={post.Description} type={post.category} Source={props.getSource(post.Links)}/>
                  </div>
                 ))}
-                </InfiniteScroll>
-         
-       
+          </InfiniteScroll>
       </>
   );
 }

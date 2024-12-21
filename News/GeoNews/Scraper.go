@@ -12,7 +12,6 @@ func ImportHeadlines(element string, address string) *DataStructures.LinkedList 
 	var images []DataStructures.Image
 	var urls []string
 	var descriptions []string
-	var uniqueUrls = make(map[string]bool)
 	collector := colly.NewCollector(
 		colly.IgnoreRobotsTxt(), // Ignore robots.txt
 	)
@@ -56,9 +55,6 @@ func ImportHeadlines(element string, address string) *DataStructures.LinkedList 
 	if e != nil {
 		fmt.Println(e)
 
-	}
-	for url := range uniqueUrls {
-		urls = append(urls, url)
 	}
 	response := DataStructures.NewLinkedList()
 	uniqueItems := make(map[string]*DataStructures.Node)

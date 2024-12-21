@@ -86,7 +86,7 @@ export default function HomePage(props:props) {
         newData.push(source[i]);
       }
       setData(newData);
-      setIdx(idx + 4);
+      setIdx(idx + 6);
       setHasMore(idx<posts.length);
 
     };

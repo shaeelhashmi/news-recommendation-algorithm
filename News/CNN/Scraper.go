@@ -14,7 +14,7 @@ func ImportHeadlines(element string, address string) *DataStructures.LinkedList 
 	var descriptions []string
 	var uniqueUrls = make(map[string]bool)
 	collector := colly.NewCollector(
-		colly.IgnoreRobotsTxt(), // Ignore robots.txt
+		colly.IgnoreRobotsTxt(),
 	)
 	collector.OnHTML(element, func(e *colly.HTMLElement) {
 		isFound := false
