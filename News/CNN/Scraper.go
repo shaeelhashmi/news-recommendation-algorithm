@@ -69,6 +69,9 @@ func ImportHeadlines(element string, address string) *DataStructures.LinkedList 
 		}
 
 	}
+	collector.OnScraped(func(r *colly.Response) {
+		fmt.Println("Scraping completed")
+	})
 	for _, key := range order {
 		DataStructures.Append(response, uniqueItems[key].Value)
 	}

@@ -11,7 +11,13 @@ interface props{
     type?:string
     Source:string
 }
+
 export default function NewsCard(props:props) {
+  const decreaseDescription = (description: string) => {
+    if (description.length > 130) {
+      return description.slice(0, 130) + "...";
+    }
+  };
   return (
     <div className="w-[250px]  h-[450px] bg-white border-2 border-solid shadow-lg m-8 mt-20 ">
         <div className="w-full h-[50%] m-0">
@@ -22,11 +28,10 @@ export default function NewsCard(props:props) {
             )}
         </div>
         <div className="w-full h-[80px]  text-sm font-thin p-2">{props.description}</div>
-        <p className="mx-2 font-sans font-light">Source: {props.Source}</p>
+        <p className="mx-2 my-2 mt-3 font-sans font-light">Source: {props.Source}</p>
         <div className="flex items-center justify-end w-full">
             <a className="w-[150px] h-[40px] bg-blue-600 m-3  hover:bg-blue-500 duration-500 transition-all cursor-pointer flex items-center justify-center text-white rounded-sm mt-9" href={props.link} target="_blank"
             onClick={()=>{
-              console.log(props.type)
                 axios.post("http://localhost:8080/interest",{
                     PostType: props.type
                 },{withCredentials:true})
