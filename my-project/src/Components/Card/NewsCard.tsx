@@ -33,7 +33,6 @@ export default function NewsCard(props:props) {
         <div className="flex items-center justify-end w-full">
             <a className="w-[150px] h-[40px] bg-blue-600 m-3  hover:bg-blue-500 duration-500 transition-all cursor-pointer flex items-center justify-center text-white rounded-sm mt-9" href={props.link} target="_blank"
             onClick={()=>{
-              console.log(props.type)
                 axios.post("http://localhost:8080/interest",{
                  
                     PostType: props.type
