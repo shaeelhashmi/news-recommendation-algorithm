@@ -147,8 +147,9 @@ export default function HomePage(props:props) {
        className="grid justify-center lg:w-[calc(99vw-180px)] w-screen grid-cols-1 ml-0 lg:grid-cols-3 md:grid-cols-2 justify-items-center lg:ml-[180px] " 
        >
        {data.map((post,index) => (
+        console.log(post),
         <div key={index}>
-        <NewsCard image={post.Img} link={post.Links} description={post.Description} type={post.category} Source={props.getSource(post.Links)}/>
+        <NewsCard image={post.Img} link={post.Links} description={post.Description} type={post.Category} Source={props.getSource(post.Links)}/>
         </div>
        ))}
        </InfiniteScroll>

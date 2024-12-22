@@ -149,7 +149,7 @@ export default function TopicNews(props: any) {
                 >
                 {data.map((post,index) => (
                  <div key={index}>
-                 <NewsCard image={post.Img} link={post.Links} description={post.Description} type={post.category} Source={props.getSource(post.Links)}/>
+                 <NewsCard image={post.Img} link={post.Links} description={post.Description} type={topic} Source={props.getSource(post.Links)}/>
                  </div>
                 ))}
           </InfiniteScroll>

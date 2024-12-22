@@ -52,6 +52,7 @@ func InterestManage(w http.ResponseWriter, r *http.Request, store *sessions.Cook
 		stmt, err := db.Prepare("UPDATE " + PostType + " SET visit=visit+1, latestVisit=? WHERE username=?")
 
 		if err != nil {
+
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
