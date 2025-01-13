@@ -18,7 +18,7 @@ This project implements a News Recommendation Algorithm in Go, combining SQL for
 - Golang
 - Node.js
 ### Video demonstration:
-Watch this video to see the website in action. Video link [here](https://www.linkedin.com/feed/update/urn:li:activity:7202682563788689408/)
+Watch this video to see the website in action. Video link [here](https://www.youtube.com/watch?v=Fy6Hpvvko6E)
 ### Installation:
 * You can install the zip file of the project from [here](https://github.com/shaeelhashmi/news-recommendation-algorithm)
 * If you have git installed type
