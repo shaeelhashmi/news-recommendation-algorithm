@@ -1,6 +1,6 @@
 # News Recommendation algorithm
 ## Summary:
-This project implements a News Recommendation Algorithm in Go, combining SQL for user authentication and tracking news visit history, including categories and recency. The algorithm builds a personalized FYP by prioritizing frequently visited and recently accessed topics while maintaining diversity through randomization. Web scraping is powered by the Colly library, with caching and hash sets optimizing performance.
+This project implements a News Recommendation Algorithm in Go, combining SQL for user authentication and tracking news visit history, including categories and recency. The algorithm builds a personalized FYP by prioritizing frequently visited and recently accessed topics while maintaining diversity through randomization. Web scraping is powered by the Colly library, with caching optimizing performance.
 ## Features
 - News Recommendation Algorithm
   - Personalized FYP based on:
