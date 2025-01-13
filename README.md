@@ -26,7 +26,7 @@ Watch this video to see the website in action. Video link [here](https://www.you
 git clone https://github.com/shaeelhashmi/news-recommendation-algorithm
 ```
 ### Execution:
-Once in the news-recommendation-algorithm [set up your .env file](# Setting up .env) and then run: 
+Once in the news-recommendation-algorithm [set up your .env file](#setting-up-env) and then run: 
 ```
 go run main.go
 ```
