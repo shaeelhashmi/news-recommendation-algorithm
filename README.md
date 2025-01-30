@@ -38,6 +38,7 @@ Once in the directory install the necessary packages.
 ```
 npm install
 ```
+After installation start the server.
 ```
 npm run dev
 ```
